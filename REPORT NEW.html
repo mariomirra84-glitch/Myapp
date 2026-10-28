@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Danieli – Report di ispezione</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#eef0f2;--card:#fff;--ink:#1b2127;--mut:#5d6873;--line:#d3d8dd;--red:#c8102e;--ok:#17803d;--ko:#c8102e;--wa:#b26a00;--fld:#f7f8f9;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181c;--card:#1d2328;--ink:#e8ecef;--mut:#9aa6b0;--line:#323b43;--red:#ff4d63;--ok:#46c277;--ko:#ff6b7d;--wa:#e9a23b;--fld:#12161a}}
+:root[data-theme="dark"]{--bg:#14181c;--card:#1d2328;--ink:#e8ecef;--mut:#9aa6b0;--line:#323b43;--red:#ff4d63;--ok:#46c277;--ko:#ff6b7d;--wa:#e9a23b;--fld:#12161a}
+*,*:before,*:after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 Barlow,system-ui,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--card);z-index:10}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--card);border-bottom:3px solid var(--red);display:flex;align-items:center;gap:12px;padding:10px 14px}
+#logo{height:34px;max-width:170px;object-fit:contain;display:block;background:#fff;padding:3px 6px;border-radius:4px}
+#logoSvg{display:none;font:700 26px/1 'Barlow Condensed',sans-serif;letter-spacing:.5px;color:var(--red);cursor:pointer}
+header h1{font:600 16px 'Barlow Condensed',sans-serif;margin:0;flex:1;color:var(--mut)}
+#tot{font:700 22px 'Barlow Condensed',sans-serif;color:var(--red)}
+main{max-width:860px;margin:0 auto;padding:12px 12px 90px}
+section{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px;margin-bottom:12px}
+h2{font:700 19px 'Barlow Condensed',sans-serif;margin:0 0 10px;color:var(--red)}
+label{display:block;font-size:12px;color:var(--mut);margin-bottom:2px}
+input,select,textarea,button{font:inherit;color:var(--ink)}
+input,select,textarea{width:100%;background:var(--fld);border:1px solid var(--line);border-radius:6px;padding:9px 10px;min-height:42px}
+textarea{min-height:90px;resize:vertical}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--red);outline-offset:1px}
+.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.row{border:1px solid var(--line);border-radius:6px;padding:10px;margin-bottom:8px;background:var(--fld)}
+.row .g{grid-template-columns:repeat(auto-fit,minmax(105px,1fr))}
+.row input,.row select{background:var(--card)}
+button{border:1px solid var(--line);background:var(--card);border-radius:6px;padding:9px 13px;min-height:42px;cursor:pointer}
+button.p{background:var(--red);border-color:var(--red);color:#fff;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border-radius:20px;padding:8px 14px}
+.chip.on{background:var(--red);border-color:var(--red);color:#fff}
+.mic{width:42px;padding:0;font-size:18px;flex:none}
+.mic.rec{background:var(--red);color:#fff;animation:pl 1s infinite}
+@media(prefers-reduced-motion:reduce){.mic.rec{animation:none}}
+@keyframes pl{50%{opacity:.5}}
+.ph{display:grid;grid-template-columns:1fr auto;gap:6px 8px;align-items:center;margin-bottom:12px}
+.ph .nm{border:0;background:none;padding:2px 0;min-height:0;font-weight:600}
+.bar{grid-column:1/-1;height:12px;background:var(--line);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--red);transition:width .25s}
+.ctl{grid-column:1/-1;display:flex;gap:8px;align-items:center}
+.ctl input[type=range]{padding:0;min-height:30px;border:0;background:none;accent-color:var(--red)}
+.ctl input[type=number]{width:74px}
+.st{font-weight:700;font-size:13px;margin-top:6px}
+.OK{color:var(--ok)}.NOK{color:var(--ko)}.WA{color:var(--wa)}
+.hint{font-size:12px;color:var(--mut);margin:4px 0 8px}
+.x{float:right;min-height:30px;padding:2px 9px;color:var(--mut)}
+.ph2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+.ph2 div{position:relative}.ph2 img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;display:block}
+.ph2 input{font-size:13px;min-height:34px;padding:4px 8px;margin-top:4px}
+#sum{margin-bottom:12px}
+.ck{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:9px 0;border-bottom:1px solid var(--line);margin:0;color:var(--ink);font-size:15px}
+.ck input[type=checkbox]{width:24px;height:24px;min-height:0;padding:0;flex:none;accent-color:var(--red)}
+.ck span{flex:1 1 60%}
+.ck input[type=text]{flex:1 1 100%;min-height:36px}
+.sg{border:1px solid var(--line);border-radius:6px;padding:10px;margin-bottom:10px;background:var(--fld)}
+.sg canvas{width:100%;height:150px;background:#fff;border:1px dashed var(--mut);border-radius:6px;touch-action:none;display:block}
+.sg .sb{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;align-items:center}
+.bot{position:fixed;left:0;right:0;bottom:0;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--line);display:flex;gap:8px;justify-content:center;z-index:9}
+.bot button{flex:1;max-width:200px}
+#sum{white-space:pre-wrap;font:13px/1.4 ui-monospace,monospace;background:var(--fld);border:1px solid var(--line);border-radius:6px;padding:10px;display:none;margin-top:10px}
+.hide{display:none}
+@media print{:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--card:#fff;--ink:#1b2127;--mut:#5d6873;--line:#d3d8dd;--red:#c8102e;--ok:#17803d;--ko:#c8102e;--wa:#b26a00;--fld:#f7f8f9}.bot,.x,.mic,.chips,button,.sg .sb button{display:none!important}header{position:static}body{background:#fff}section{break-inside:avoid}.hide{display:none!important}}
+.d{margin-top:12px}.d img{display:block;max-width:100%;max-height:260px;margin-top:6px;border-radius:4px;background:#fff}
+@page{margin:10mm}
+@media print{#langsec{display:none}#docsec>h2,#docsec .hint,#docsec .btns{display:none}#docsec{break-inside:auto;border:0;padding:0}.d{break-before:page;margin:0}.d img{width:100%;max-height:245mm;object-fit:contain;margin:0 auto}.d input{border:0;background:none;font-weight:600;padding:0}.sg canvas{border-style:solid}}
+#pt,#pt tbody,#pt tr,#pt td{display:block;padding:0}#pt thead{display:none}
+.sg canvas{height:auto;aspect-ratio:3/1}
+@media print{header{display:none}#pt{display:table;width:100%}#pt thead{display:table-header-group}#pt tbody{display:table-row-group}#pt tr{display:table-row}#pt td{display:table-cell}
+#prh{display:flex;align-items:center;gap:12px;border-bottom:2px solid #c8102e;padding:0 0 4px;margin-bottom:8px}#prh img{height:30px;background:#fff}#prT{font:600 12px Barlow,sans-serif;color:#1b2127}
+#sigs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}#addSg{display:none}.sg{margin:0;padding:6px}.sg .g{grid-template-columns:1fr}.sg input{min-height:30px;padding:4px 6px;font-size:12px}}
+.sdoc{margin-top:14px;border-top:1px dashed var(--line);padding-top:10px}
+@media print{.sdoc>label,.sdoc .btns{display:none}.sdoc:not(:has(.d)){display:none}.sdoc{border:0;margin:0;padding:0}}
+#prCl{margin-left:auto}
+
+#manBtn{margin-left:auto;font:600 13px Barlow,sans-serif;color:var(--red);text-decoration:underline;white-space:nowrap;cursor:pointer;padding:6px 4px}
+@media(max-width:520px){header h1{display:none}}
+#man{position:fixed;inset:0;z-index:60;background:var(--bg);overflow:auto;padding-top:env(safe-area-inset-top,0px)}
+#manH{position:sticky;top:0;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;background:var(--card);border-bottom:3px solid var(--red)}
+#manB{padding:12px;max-width:860px;margin:0 auto}
+#manB .mi{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:10px}
+#manB .mi p{margin:4px 0 8px}#manB .en{color:var(--mut);border-top:1px dashed var(--line);padding-top:6px}
+.pgrp{border:1px solid var(--line);border-radius:6px;padding:10px;margin-bottom:10px;background:var(--fld)}.pgrp .pgt{font-weight:600}
+@media print{
+*{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body::before{display:none}
+body{font-size:10.5px;line-height:1.35;background:#fff;color:#1b2127}
+main{padding:0!important;max-width:none}
+#man,#manBtn,#oldph,#fnp{display:none!important}
+section{border:0;border-radius:0;padding:0 0 4px;margin:0 0 9px;background:none;break-inside:auto}
+section>h2{font:700 13px 'Barlow Condensed',sans-serif;letter-spacing:.7px;text-transform:uppercase;color:#1b2127;border-left:4px solid #c8102e;background:#eef0f2;padding:3px 8px;margin:0 0 6px;break-after:avoid}
+label{font-size:8.5px;text-transform:uppercase;letter-spacing:.4px;color:#5d6873;margin:0}
+input,select,textarea{border:0;border-bottom:1px solid #cfd5da;border-radius:0;background:none;padding:2px 0;min-height:0;font-size:11px;-webkit-appearance:none;appearance:none}
+textarea{resize:none;overflow:visible}
+.g{gap:6px 12px}
+.row{background:none;border:1px solid #d3d8dd;border-left:3px solid #c8102e;border-radius:2px;padding:6px 8px;margin-bottom:5px;break-inside:avoid}
+.row input,.row select{background:none}
+.st{font-size:10px;margin-top:3px}
+section>.hint{display:none}
+.ctl input[type=range]{display:none}.bar{height:8px}.ph{margin-bottom:6px}
+.pgrp{border:0;background:none;padding:0;margin-bottom:8px}.pgrp .pgt{font:700 12px Barlow,sans-serif;border-bottom:2px solid #c8102e}
+.ph2 div{break-inside:avoid}
+.d img{max-height:205mm!important}
+#docsec:not(:has(.d)){display:none}
+.mic,.bot,.chips,.x,#langsec{display:none!important}
+}
+
+#tot{display:none}
+#strip{display:flex;gap:3px;margin-bottom:12px}
+#strip i{flex:1;height:10px;border-radius:3px;background:var(--line);position:relative;overflow:hidden}
+#strip i b{position:absolute;left:0;top:0;bottom:0;background:var(--red)}
+#strip i.ok b{background:var(--ok)}
+.phx{display:flex;gap:12px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--fld);margin-bottom:8px}
+.ring{--c:var(--red);width:52px;height:52px;border-radius:50%;flex:none;display:grid;place-items:center;background:conic-gradient(var(--c) calc(var(--p)*1%),var(--line) 0)}
+.ring.ok{--c:var(--ok)}
+.ring b{width:40px;height:40px;border-radius:50%;background:var(--card);display:grid;place-items:center;font:700 12px/1 Barlow,sans-serif}
+.phb{flex:1;min-width:0}.phtop{display:flex;gap:6px;align-items:center}.phtop .nm{font-weight:600;background:none;border:0;padding:2px 0;min-height:0}
+.phmid{display:grid;grid-template-columns:auto 1fr;gap:6px 8px;align-items:center;margin-top:4px}.phmid label{margin:0}
+.phmid input[type=date]{min-height:34px}
+.phr{display:flex;gap:8px;align-items:center;grid-column:1/-1}.phr input[type=range]{padding:0;border:0;background:none;accent-color:var(--red);min-height:28px}.phr input[type=number]{width:70px}
+.dlp{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.d.foto img{aspect-ratio:4/3;object-fit:cover;width:100%;max-height:none}
+@media print{
+section{break-inside:avoid}
+main{counter-reset:chap}
+section>h2{border:0!important;background:none!important;padding:0!important;text-decoration:underline;text-decoration-color:#c8102e;text-decoration-thickness:2px;text-underline-offset:3px;margin:0 0 7px!important;font-size:14px}
+section>h2::before{counter-increment:chap;content:counter(chap) ". "}
+#fnwrap,#cplx,#clHint,#clBtn,#clSrch,#clDel{display:none!important}
+input[type=checkbox]{-webkit-appearance:checkbox;appearance:auto;width:14px;height:14px;min-height:0;accent-color:#c8102e}
+#imb .ck:not(:has(input[type=checkbox]:checked)){display:none}
+.ck{padding:3px 0}
+.phx{break-inside:avoid;padding:4px 6px;margin-bottom:4px;background:none}.ring{width:38px;height:38px}.ring b{width:28px;height:28px;font-size:10px}
+.phr{display:none}.phx .nm{font-weight:700}.phmid input[type=date]{min-height:0}
+#strip{margin-bottom:8px}
+.d.foto{break-before:auto!important;break-inside:avoid;margin:0}
+.d.foto img{max-height:75mm!important;aspect-ratio:4/3;object-fit:cover;width:100%}
+.d.scan{break-before:page!important;margin:0}
+.d.scan img{max-height:225mm!important}
+}
+@media print{.pe{display:none!important}#zdef .ck:not(:has(input[type=checkbox]:checked)){display:none}}
+</style>
+
+<style id="v2">
+:root{--bg:#f3f5f8;--line:#e3e7ec;--mut:#5f6b77;--fld:#f7f9fb;--sh:0 1px 2px rgba(16,24,40,.05),0 6px 18px rgba(16,24,40,.06)}
+body{font-size:16.5px;line-height:1.45}
+header{padding:12px 16px;box-shadow:0 2px 10px rgba(16,24,40,.07)}
+header h1{font-size:18px}
+main{max-width:900px;padding:14px 12px 100px}
+label{font-size:13.5px;font-weight:600;margin-bottom:5px}
+input,select,textarea{font-size:16px;padding:11px 12px;min-height:48px;border-radius:10px}
+textarea{min-height:110px;line-height:1.45}
+textarea.big{min-height:210px}
+button{border-radius:10px;min-height:46px;padding:10px 16px}
+button.p{box-shadow:0 2px 6px rgba(200,16,46,.25)}
+.chip{padding:9px 16px;font-size:15px}
+.hint{font-size:13.5px;line-height:1.4}
+.g{gap:12px;grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+.row{border-radius:12px;padding:12px;margin-bottom:10px}
+.st{font-size:14.5px}
+.ck{font-size:16px}
+.bot{box-shadow:0 -4px 16px rgba(16,24,40,.08)}
+.tp{display:none}
+.ord .g{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.ord .ofull{margin-top:10px}
+.odesc{min-height:130px}
+.wbsl{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.wb{display:flex;gap:4px;align-items:center;flex:1 1 170px;max-width:270px}
+.wb .x{float:none;flex:none;min-height:44px}
+.xlt{overflow-x:auto;border:1px solid var(--line);border-radius:10px;margin-top:10px;max-height:420px;overflow-y:auto}
+.xlr{display:grid;grid-template-columns:repeat(var(--n),minmax(110px,1fr));min-width:calc(var(--n)*110px)}
+.xlr span{padding:6px 8px;border-bottom:1px solid var(--line);border-right:1px solid var(--line);font-size:13px;word-break:break-word}
+.xlr.xh span{font-weight:700;background:var(--fld);position:sticky;top:0}
+#xlInfo{font-weight:600;margin-top:10px}
+@media screen{
+section{border:0;border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:var(--sh)}
+h2{display:flex;align-items:center;gap:10px;font-size:23px;margin:0 0 14px}
+h2::before{content:"";width:5px;height:22px;border-radius:3px;background:var(--red);flex:none}
+}
+@media print{
+body{font-size:11.5px;line-height:1.4}
+section{break-inside:auto!important;margin:0 0 7px!important;padding:0 0 2px!important}
+section>h2{break-after:avoid;font-size:15px!important;margin:0 0 5px!important}
+label{font-size:9.5px;font-weight:600}
+input,select{font-size:12.5px}
+.g{gap:4px 14px}
+.row,.phx,.sg,.pgrp .ph2>div,.ck,.ord{break-inside:avoid}
+.row{padding:5px 8px;margin-bottom:4px}
+.ord .ofull{margin-top:4px}
+textarea{display:none!important}
+.tp{display:block;white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.5;border:1px solid #d3d8dd;border-left:3px solid #c8102e;border-radius:3px;background:#fafbfc;padding:6px 9px;margin-top:2px}
+.tp:empty{display:none}
+.wbsl{gap:2px 12px}.wb{flex:0 1 190px}
+.xlt{overflow:visible;border:0;max-height:none;margin-top:4px}
+.xlr{grid-template-columns:repeat(var(--n),1fr);min-width:0;break-inside:avoid}
+.xlr span{font-size:9px;padding:2px 4px;position:static}
+#xlInfo{margin:0 0 3px;font-size:11px}
+#xlsec .btns,#xlsec .hint{display:none!important}
+#descsec>div{display:block!important}
+#phases{display:grid;grid-template-columns:1fr 1fr;gap:3px 12px}
+#phases #strip{grid-column:1/-1}
+.phx{margin:0!important;padding:3px 6px!important;gap:8px;border-radius:6px}
+.phmid{display:block;margin-top:0}.phmid label{display:inline;margin-right:6px}
+.phmid input[type=date]{width:auto;display:inline;font-size:11px}
+.phtop .nm{font-size:12.5px}
+}
+</style>
+</head>
+<body>
+<header>
+ <div id="logoBox" title="Tocca per caricare il logo"><svg id="logoSvg" width="130" height="30" viewBox="0 0 130 30" role="img" aria-label="Danieli"><text x="0" y="25" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="30" fill="currentColor" style="color:var(--red)" letter-spacing="1">DANIELI</text></svg><img id="logo" alt="Danieli" src="data:image/png;base64,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"></div>
+ <input type="file" id="logoIn" accept="image/*" hidden>
+ <h1>Report di ispezione</h1><div id="tot">0%</div>
+</header>
+<table id="pt"><thead><tr><td><div id="prh"><img id="prLogo" alt="Danieli"><div id="prT"></div><img id="prCl" alt="" style="display:none"></div></td></tr></thead><tbody><tr><td><datalist id="wlist"></datalist><main>
+<section id="langsec"><h2>Lingua del report / Report language</h2><div class="chips lang"><button class="chip" data-lang="it">Italiano</button><button class="chip" data-lang="en">English</button></div></section>
+<section><h2>Dati ispezione</h2>
+<div class="g">
+<div style="grid-column:1/-1"><label>Cliente</label><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><input data-f="cli" placeholder="Nome cliente" style="flex:1 1 150px"><img id="clThumb" alt="" style="display:none;height:42px;max-width:90px;object-fit:contain;background:#fff;border-radius:4px"><button id="clBtn" style="flex:none">🖼️ Logo cliente</button><button id="clSrch" style="flex:none">🔍 Cerca logo online</button><button id="clDel" class="x" style="display:none;float:none;flex:none" aria-label="Elimina">✕</button></div><input type="file" id="clIn" accept="image/*" hidden><div class="hint" id="clHint" style="display:none">Nella ricerca tieni premuta l’immagine e scegli “Scarica immagine”, poi tocca “Logo cliente” e scegli il file scaricato.</div></div>
+<div><label>Fornitore</label><input data-f="forn"></div>
+<div><label>Luogo</label><input data-f="luogo"></div>
+<div><label>Disegno / rev.</label><input data-f="dis"></div>
+</div><label style="margin-top:12px;display:block;font-weight:700">Ordini</label><div id="ords"></div><button data-add="ords">+ Ordine</button></section>
+
+<section id="xlsec"><h2>File Excel</h2>
+<div class="hint">Carica un file Excel (.xlsx, .xls, .csv): viene mostrato nel report e puoi importarne le righe negli ordini (colonne riconosciute: Ordine, Riga, WBS, Descrizione).</div>
+<input type="file" id="xlIn" accept=".xlsx,.xls,.xlsm,.csv" hidden>
+<div class="btns" style="display:flex;gap:8px;flex-wrap:wrap"><button class="p" id="xlBtn">📊 Carica file Excel</button><button id="xlImp" style="display:none">Importa negli ordini</button><button id="xlDel" style="display:none">✕ Rimuovi</button></div>
+<div id="xlInfo"></div><div id="xlTab"></div></section>
+
+<section><h2>Avanzamento</h2><div class="chips" style="margin-bottom:6px"><button class="chip" id="cplx">Macchina complessa</button></div><div class="hint">Macchina complessa: aggiunge tutte le fasi (acquisti, arrivo materiali, piping, electric on board…). Puoi eliminare o rinominare ogni fase.</div><div id="phases"></div><button id="addPh">+ Fase</button></section>
+
+<section id="descsec"><h2>Attività svolta in ispezione</h2>
+<div style="display:flex;gap:8px;align-items:flex-start"><textarea id="desc" class="big" data-f="desc" placeholder="Cosa è stato verificato, esiti, azioni, punti aperti…"></textarea></div>
+
+</section>
+
+<section id="techsec"><h2>Sezione tecnica</h2>
+<div class="hint">Seleziona le macro attività produttive verificate.</div>
+<div class="chips" id="macros"></div></section>
+
+<section id="s-mech" class="hide"><h2>Lavorazione meccanica – controllo dimensionale</h2><div id="mech"></div><button data-add="mech">+ Quota</button></section>
+
+<section id="s-weld" class="hide"><h2>Saldatura – collaudo per singola saldatura</h2>
+<div class="hint">Livelli di qualità ISO 5817 (acciaio): B stringente, C intermedio, D moderato. Alluminio: ISO 10042.</div>
+
+<div id="weld"></div><button data-add="weld">+ Saldatura</button></section>
+
+<section id="s-ndt" class="hide"><h2>Controlli NDT</h2><div class="hint">Per ogni controllo scegli la saldatura, il metodo, la norma di accettabilità (es. ISO 5817) e la classe. I riferimenti tecnici del metodo compaiono in automatico. Selezione dei metodi: EN ISO 17635. Qualifica del personale: ISO 9712. Verifica sempre l’edizione vigente.</div><div id="ndt"></div><button data-add="ndt">+ Controllo NDT</button></section>
+
+<section id="s-paint" class="hide"><h2>Preparazione alla verniciatura</h2>
+<div class="g">
+ <div><label>Grado pulizia – ISO 8501-1</label><select data-f="sa"><option value="">–</option><option>Sa 1</option><option>Sa 2</option><option>Sa 2½</option><option>Sa 3</option><option>St 2</option><option>St 3</option></select></div>
+ <div><label>Grado saldature – EN ISO 8501-3</label><select data-f="pg"><option value="">–</option><option>P1</option><option>P2</option><option>P3</option></select></div>
+ <div><label>Richiesti da specifica</label><div class="g" style="grid-template-columns:1fr 1fr"><input data-f="saReq" placeholder="Es. Sa 2½"><input data-f="pgReq" placeholder="Es. P2"></div></div>
+ <div><label>Profilo rugosità – ISO 8503 (µm)</label><input type="number" inputmode="decimal" data-f="rug"></div>
+ <div><label>Polvere – ISO 8502-3 (grado)</label><select data-f="pol"><option value="">–</option><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+ <div><label>Sali solubili – ISO 8502-6/9 (mg/m²)</label><input type="number" inputmode="decimal" data-f="sali"></div>
+ <div><label>T aria (°C)</label><input type="number" inputmode="decimal" data-f="ta" class="amb"></div>
+ <div><label>T acciaio (°C)</label><input type="number" inputmode="decimal" data-f="ts" class="amb"></div>
+ <div><label>Umidità relativa (%)</label><input type="number" inputmode="decimal" data-f="ur" class="amb"></div>
+</div>
+<div class="hint">P1 preparazione leggera · P2 accurata · P3 molto accurata (spigoli arrotondati, spruzzi e difetti rimossi). Acciaio ≥ 3 °C sopra il punto di rugiada.</div>
+<div class="st" id="pst"></div></section>
+
+<section id="s-ndft" class="hide"><h2>Verniciatura – controllo NDFT</h2>
+<div class="hint">Misura DFT secondo ISO 19840 (superfici rugose) / ISO 2808. Criterio 80/20 (ISO 12944-5): nessuna lettura sotto 80 % NDFT, media ≥ NDFT, massimo ≤ 3 × NDFT salvo scheda tecnica.</div>
+<div class="g" style="margin-bottom:10px"><div><label>Sistema / ciclo (ISO 12944)</label><input data-f="ciclo" placeholder="Es. C4 H"></div><div><label>Spessimetro</label><input data-f="spess"></div></div>
+<div id="ndft"></div><button data-add="ndft">+ Strato</button></section>
+
+<section id="s-zn" class="hide"><h2>Zincatura a caldo – ISO 1461</h2>
+<div class="hint">ISO 1461: zincatura a caldo per immersione. Spessore con metodo magnetico ISO 2178. Guida alla durabilità: EN ISO 14713. Valori minimi indicativi: verifica la specifica d’ordine.</div>
+<div class="g"><div><label>Categoria / spessore acciaio</label><select data-f="zst"><option value="">–</option><option value="70/85">Acciaio &gt; 6 mm (loc. 70 / medio 85 µm)</option><option value="55/70">Acciaio 3–6 mm (55 / 70 µm)</option><option value="45/55">Acciaio 1,5–3 mm (45 / 55 µm)</option><option value="35/45">Acciaio &lt; 1,5 mm (35 / 45 µm)</option><option value="70/80">Getti ≥ 6 mm (70 / 80 µm)</option><option value="60/70">Getti &lt; 6 mm (60 / 70 µm)</option></select></div>
+<div><label>Strumento (ISO 2178)</label><input data-f="zsp"></div>
+<div><label>Letture spessore µm (spazio o virgola)</label><input data-f="zr"></div>
+<div><label>Riparazioni / ritocchi eseguiti</label><input data-f="zrip"></div></div>
+<label style="margin-top:10px">Difetti visivi riscontrati</label><div id="zdef"></div>
+<div class="st" id="znst"></div></section>
+
+<section id="s-qb" class="hide"><h2>Documentazione e quality book</h2>
+<div class="g"><div style="grid-column:1/-1"><label>Esito analisi</label><select data-f="qbs"><option value="">–</option><option>Accettabile – OK caricare su DVCP</option><option>Non accettabile – completare e caricare su DVCP</option></select></div>
+<div id="qbd1" class="hide"><label>Completare entro il</label><input type="date" data-f="qbc"></div>
+<div id="qbd2" class="hide"><label>Caricare su DVCP entro il</label><input type="date" data-f="qbu"></div></div>
+<label style="margin-top:10px">Note analisi quality book</label><textarea data-f="qbn" style="min-height:70px"></textarea></section>
+
+<section id="s-fn" class="hide"><h2>Test funzionali</h2><div id="fn"></div><button data-add="fn">+ Test</button></section>
+
+<section id="s-cart" class="hide"><h2>Cartellinatura</h2>
+<div class="g"><div><label>Esito</label><select data-f="cs"><option value="">–</option><option>Accettabile</option><option>Non accettabile</option><option>Da fare entro il</option></select></div>
+<div id="cdw" class="hide"><label>Da fare entro il</label><input type="date" data-f="cd"></div></div>
+<label style="margin-top:10px">Note (contenuto cartellini, posizione)</label><input data-f="cn"></section>
+
+<section id="s-imb" class="hide"><h2>Imballo secondo specifica</h2>
+<div class="hint">Spunta le voci richieste e verificate. Nel report compaiono solo le voci selezionate.</div>
+<div id="imb"></div></section>
+
+<section id="fotosec"><h2>Foto</h2><div id="pgs"></div><button class="p" id="addPg">+ Gruppo foto</button><input type="file" id="pgCam" accept="image/*" capture="environment" hidden><input type="file" id="pgGal" accept="image/*" multiple hidden></section>
+<section id="oldph" style="display:none"><h2>Foto</h2>
+<input type="file" id="phIn" accept="image/*" capture="environment" hidden>
+<input type="file" id="phIn2" accept="image/*" multiple hidden>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="p" id="cam">📷 Scatta</button><button id="gal">Galleria</button></div>
+<div class="ph2" id="photos"></div></section>
+
+<section><h2>Esito generale</h2>
+<div class="g"><div><label>Esito ispezione</label><select data-f="esito"><option value="">–</option><option>Conforme</option><option>Conforme con riserve</option><option>Non conforme</option><option>Ispezione da ripetere</option></select></div>
+<div><label>Prossima ispezione / data pronto merce</label><input type="date" data-f="next"></div></div>
+</section>
+<section id="azsec"><h2>Azioni da eseguire</h2><div id="az"></div><button data-add="az">+ Azione</button></section>
+<section><h2>Firme</h2><div class="g" style="margin-bottom:10px"><div><label>Data del report</label><input type="date" data-f="rdata"></div></div><div id="fnwrap" style="margin-bottom:10px"><label>Nome file PDF (modificabile)</label><input id="fnin" placeholder="DataFornitoreNNN"></div><div id="sigs"></div></section>
+<div id="sum"></div>
+<section id="docsec"><h2>Aggiungi documento</h2>
+<div class="hint">Scansiona o fotografa il documento: viene allegato al report a tutta pagina.</div>
+<input type="file" id="dcIn" accept="image/*" capture="environment" hidden>
+<div class="btns" style="display:flex;gap:8px;flex-wrap:wrap"><button class="p" id="dcScan">📄 Scansiona documento</button><button id="dcFoto">📷 Foto documento</button></div>
+<input type="file" id="dcGal" accept="image/*" multiple hidden><div style="margin-top:8px"><button id="dcGalB">🖼️ Galleria</button></div><div id="docs"></div></section>
+</main></td></tr></tbody></table>
+<div class="bot"><button class="p" id="bSum">Riepilogo</button><button id="bPrint">Stampa / PDF</button><button id="bNew">Nuovo</button></div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+var EN={};let LANG='it';const _t=s=>(LANG=='en'&&EN[s])||s;
+const PH0=['Ingegneria','Fabbricazione','Test','Documentazione (DVCP)','Identificazione (labels)','Packing','RFD (Ready for delivery)'];
+const PHOLD={'Materiali':'Arrivo materiali','Lavorazioni meccaniche':'Lavorazioni meccaniche','Saldatura':'Saldature','Controlli / NDT':'Controlli NDT','Verniciatura':'Verniciatura','Montaggio e test':'Montaggio','Imballo e spedizione':'Imballaggio'};
+const PHEN={'Materials':'Materiali','Machining':'Lavorazioni meccaniche','Welding':'Saldatura','Inspection / NDT':'Controlli / NDT','Painting':'Verniciatura','Assembly and testing':'Montaggio e test','Packing and shipping':'Imballo e spedizione'};
+function migPh(){const o=S.ph||[],k=Object.keys(PHOLD);if(o.length!=7)return;const n=o.map(x=>PHEN[x.n]||x.n);if(!n.every((x,i)=>x==k[i]))return;const by={};o.forEach((x,i)=>by[PHOLD[n[i]]]=x.p);S.ph=PH0.map(x=>({n:x,p:by[x]||0}))}
+const MAC=[['mech','Lavorazione meccanica'],['weld','Saldatura'],['paint','Preparazione verniciatura'],['ndft','Verniciatura NDFT'],['zn','Zincatura'],['cart','Cartellinatura'],['imb','Imballo'],['fn','Test funzionali']];
+const STR=['Calibro','Micrometro esterno','Micrometro interno','Comparatore','Truschino','Metro / flessometro','Rugosimetro','Alesametro','Tastatore / CMM','Laser tracker','Dima / calibro passa-non passa','Altro'];
+const NDT={VT:'ISO 17637 · acc. ISO 5817',MT:'ISO 17638 · acc. ISO 23278',PT:'ISO 3452-1 · acc. ISO 23277',UT:'ISO 17640 · acc. ISO 11666',RT:'ISO 17636-1 · acc. ISO 10675-1',Dim:'Controllo dimensionale giunto'};
+const FNT=['Prova a vuoto','Prova idraulica','Prova pneumatica','Prova di tenuta','Prova di carico','Prova elettrica / isolamento','Prova di rotazione','Prova di pressione','Prova di funzionamento','Altro'];
+const sel=(o,v)=>o.map(x=>`<option${x==v?' selected':''}>${x}</option>`).join('');
+const S={f:{},ph:PH0.map(n=>({n,p:0})),mech:[{}],weld:[{}],ndft:[{}],fn:[{}],macros:[],photos:[],logo:'',zd:[],imb:{},sig:{}};
+const KEY='danieli-insp-v1';
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d)Object.assign(S,d)}catch(e){}}
+const num=v=>v===''||v==null||isNaN(+v)?null:+v;
+const stat=(t,c)=>`<span class="${c}">${t}</span>`;
+
+/* campi statici */
+function bindFields(){$$('[data-f]').forEach(e=>{e.value=S.f[e.dataset.f]||'';e.addEventListener('input',()=>{S.f[e.dataset.f]=e.value;if(e.classList.contains('amb')||e.dataset.f=='ta')paintSt();extra();save()})})}
+
+/* avanzamento */
+function renderPh(){
+ $('#phases').innerHTML=S.ph.map((x,i)=>`<div class="ph"><input class="nm" value="${x.n}" data-i="${i}" data-k="n" aria-label="Fase"><button class="x" data-del="ph:${i}" aria-label="Elimina">✕</button>
+ <div class="bar"><i style="width:${x.p}%"></i></div>
+ <div class="ctl"><input type="range" min="0" max="100" step="5" value="${x.p}" data-i="${i}" data-k="p" aria-label="Percentuale"><input type="number" min="0" max="100" value="${x.p}" data-i="${i}" data-k="p" inputmode="numeric"><span>%</span></div></div>`).join('');
+ tot()}
+function tot(){const a=S.ph.length?Math.round(S.ph.reduce((s,x)=>s+x.p,0)/S.ph.length):0;$('#tot').textContent=a+'%'}
+$('#phases').addEventListener('input',e=>{const t=e.target,i=+t.dataset.i,k=t.dataset.k;if(k==null)return;
+ if(k=='n')S.ph[i].n=t.value;else{const v=Math.max(0,Math.min(100,+t.value||0));S.ph[i].p=v;const w=t.closest('.ph');w.querySelector('.bar i').style.width=v+'%';w.querySelectorAll('.ctl input').forEach(q=>{if(q!==t)q.value=v});tot()}save()});
+$('#addPh').onclick=()=>{S.ph.push({n:_t('Nuova fase'),p:0});renderPh();save()};
+
+/* tabelle dinamiche */
+const T={
+ mech:{cols:[['d','Quota / descrizione','t'],['t','Teorica','n'],['tol','Tolleranza ±','n'],['m','Rilevata','n'],['s','Strumento','s',STR],['sn','Matricola / cert. tar.','t']],
+  res:r=>{const t=num(r.t),m=num(r.m),o=num(r.tol);if(t==null||m==null||o==null)return'';const d=m-t,ok=Math.abs(d)<=o+1e-9;return stat(`Δ ${d>=0?'+':''}${d.toFixed(3).replace(/\.?0+$/,'')} → ${_t(ok?'CONFORME':'FUORI TOLLERANZA')}`,ok?'OK':'NOK')}},
+ weld:{cols:[['j','Giunto / pos.','t'],['pr','Processo (ISO 4063)','s',['111 – Elettrodo rivestito (MMA)', '114 – Filo animato autoprotetto', '121 – Arco sommerso (SAW) a filo', '131 – MIG a filo pieno (gas inerte)', '135 – MAG a filo pieno (gas attivo)', '136 – MAG a filo animato (gas attivo)', '137 – MIG a filo animato (gas inerte)', '141 – TIG (elettrodo di tungsteno, gas inerte)', '15 – Plasma', '311 – Ossiacetilenica', '52 – Laser', '783 – Saldatura di prigionieri (stud)', 'Altro']],['c','Controllo','s',Object.keys(NDT)],['l','Livello ISO 5817','s',['B','C','D']],['ex','Estensione %','n'],['e','Esito','s',['','Accettabile','Non accettabile','Da riparare','Riparato OK']],['n','Note','t']],
+  res:r=>{const h=_t(NDT[r.c||'VT']||'');const e=r.e;return stat(h,'')+(e?' — '+stat(_t(e),e=='Non accettabile'||e=='Da riparare'?'NOK':'OK'):'')}},
+ ndft:{cols:[['y','Strato','s',['Primer','Intermedio','Finitura','Altro']],['pr','Prodotto','t'],['nd','NDFT (µm)','n'],['mx','Max (µm)','n'],['r','Letture µm (spazio o virgola)','t']],
+  res:r=>{const N=num(r.nd),L=(r.r||'').split(/[\s,;]+/).map(Number).filter(x=>x>0);if(!N||!L.length)return'';const a=L.reduce((s,x)=>s+x,0)/L.length,mn=Math.min(...L),mx=Math.max(...L),M=num(r.mx)||3*N;
+   const ok=mn>=.8*N&&a>=N&&mx<=M;return stat(`n=${L.length} · ${_t('media')} ${a.toFixed(0)} · min ${mn} · max ${mx} → ${_t(ok?'CONFORME':'NON CONFORME')}`,ok?'OK':'NOK')}},
+ fn:{cols:[['t','Test','s',FNT],['p','Parametri / valori','t'],['e','Esito','s',['','Positivo','Negativo','Non eseguito','Da ripetere']],['n','Note','t']],
+  res:r=>r.e?stat(_t(r.e),r.e=='Positivo'?'OK':r.e=='Negativo'?'NOK':'WA'):''}
+};
+function renderT(k){const c=T[k];$('#'+k).innerHTML=S[k].map((r,i)=>`<div class="row"><button class="x" data-del="${k}:${i}" aria-label="Elimina">✕</button><div class="g">${c.cols.map(([f,l,t,o])=>`<div><label>${l}</label>${t=='s'?`<select data-t="${k}" data-i="${i}" data-c="${f}">${(o[0]===''?'':'<option value="">–</option>')+sel(o,r[f])}</select>`:`<input ${t=='n'?'type="number" inputmode="decimal" step="any"':t=='d'?'type="date"':t=='l'?'list="wlist"':''} value="${r[f]??''}" data-t="${k}" data-i="${i}" data-c="${f}">`}</div>`).join('')}</div><div class="st">${c.res(r)}</div></div>`).join('')}
+document.addEventListener('input',e=>{const t=e.target,k=t.dataset.t;if(!k)return;const i=+t.dataset.i;S[k][i][t.dataset.c]=t.value;t.closest('.row').querySelector('.st').innerHTML=T[k].res(S[k][i]);save()});
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.add){S[b.dataset.add].push({});renderT(b.dataset.add);save()}
+ if(b.dataset.del){const[k,i]=b.dataset.del.split(':');if(k=='ph'){S.ph.splice(i,1);renderPh()}else if(k=='ph2'){S.photos.splice(i,1);renderPhotos()}else{S[k].splice(i,1);if(!S[k].length)S[k].push({});renderT(k)}save()}});
+
+/* macro attività */
+function renderMac(){$('#macros').innerHTML=MAC.map(([k,n])=>`<button class="chip${S.macros.includes(k)?' on':''}" data-m="${k}" aria-pressed="${S.macros.includes(k)}">${n}</button>`).join('');
+ MAC.forEach(([k])=>{$('#s-'+k).classList.toggle('hide',!S.macros.includes(k))})}
+$('#macros').addEventListener('click',e=>{const k=e.target.dataset.m;if(!k)return;const i=S.macros.indexOf(k);i<0?S.macros.push(k):S.macros.splice(i,1);renderMac();save()});
+
+/* verniciatura: punto di rugiada */
+function paintSt(){const ta=num(S.f.ta),ts=num(S.f.ts),ur=num(S.f.ur);let h='';
+ if(ta!=null&&ur>0){const g=Math.log(ur/100)+17.62*ta/(243.12+ta),dp=243.12*g/(17.62-g);h=`${_t('Punto di rugiada')} ${dp.toFixed(1)} °C`;if(ts!=null){const d=ts-dp;h+=` · ${_t('acciaio')} +${d.toFixed(1)} °C → `+(d>=3?stat(_t('OK applicazione'),'OK'):stat(_t('SOTTO +3 °C: non verniciare'),'NOK'))}}
+ const a=S.f.sa,b=S.f.pg,ra=S.f.saReq,rb=S.f.pgReq,q=[];
+ if(ra&&a)q.push(_t(a==ra?'pulizia conforme':'pulizia diversa dalla richiesta'));
+ if(rb&&b)q.push(_t(b==rb?'P conforme':'P diverso dal richiesto'));
+ $('#pst').innerHTML=h+(q.length?'<br>'+q.join(' · '):'')}
+
+/* foto */
+function resize(f,cb){const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const m=900,s=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;c.getContext('2d').drawImage(im,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',.6))};im.src=r.result};r.readAsDataURL(f)}
+function addPh(files){[...files].forEach(f=>resize(f,u=>{S.photos.push({u,c:''});renderPhotos();save()}))}
+function renderPhotos(){$('#photos').innerHTML=S.photos.map((p,i)=>`<div><img src="${p.u}" alt="Foto ${i+1}"><button class="x" style="position:absolute;top:2px;right:2px;float:none;background:var(--card)" data-del="ph2:${i}" aria-label="Elimina foto">✕</button><input value="${p.c}" placeholder="Didascalia" data-pc="${i}"></div>`).join('')}
+$('#photos').addEventListener('input',e=>{const i=e.target.dataset.pc;if(i!=null){S.photos[i].c=e.target.value;save()}});
+$('#cam').onclick=()=>$('#phIn').click();$('#gal').onclick=()=>$('#phIn2').click();
+$('#phIn').onchange=e=>{addPh(e.target.files);e.target.value=''};$('#phIn2').onchange=e=>{addPh(e.target.files);e.target.value=''};
+
+/* logo */
+function showLogo(){if(S.logo){$('#logo').src=S.logo;$('#logo').style.display='block';$('#logoSvg').style.display='none'}}
+$('#logoBox').onclick=()=>$('#logoIn').click();
+$('#logoIn').onchange=e=>{const f=e.target.files[0];if(f)resize(f,u=>{S.logo=u;showLogo();save()})};
+
+/* microfono */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null;
+function dictate(btn,onText){if(!SR){alert(_t('Dettatura non supportata qui: usa il microfono della tastiera del telefono.'));return}
+ if(rec){rec.stop();return}
+ rec=new SR();rec.lang=LANG=='en'?'en-GB':'it-IT';rec.interimResults=false;btn.classList.add('rec');
+ rec.onresult=ev=>onText([...ev.results].map(r=>r[0].transcript).join(' '));
+ rec.onerror=()=>{};rec.onend=()=>{btn.classList.remove('rec');rec=null};try{rec.start()}catch(e){btn.classList.remove('rec');rec=null}}
+const W={zero:0,dieci:10,venti:20,trenta:30,quaranta:40,cinquanta:50,sessanta:60,settanta:70,ottanta:80,novanta:90,cento:100};
+document.addEventListener('click',e=>{const b=e.target.closest('.mic');if(!b)return;
+ if(b.dataset.mic){const t=$('#'+b.dataset.mic);dictate(b,s=>{t.value=(t.value?t.value+' ':'')+s;S.f[t.dataset.f]=t.value;save()})}
+ if(b.dataset.micp!=null){const i=+b.dataset.micp;dictate(b,s=>{let m=s.match(/\d+/);let v=m?+m[0]:null;if(v==null)for(const w in W)if(s.toLowerCase().includes(w))v=W[w];if(v!=null){S.ph[i].p=Math.min(100,v);renderPh();save()}})}});
+
+/* riepilogo / stampa / nuovo */
+function summary(){const f=S.f,L=[];L.push('DANIELI – REPORT DI ISPEZIONE');
+ L.push(`Ordine: ${f.ord||'-'} | BU: ${f.bu||'-'} | Fornitore: ${f.forn||'-'}`,`Luogo: ${f.luogo||'-'} | Data: ${f.data||'-'} | Ispettore: ${f.isp||'-'}`,`Componente: ${f.comp||'-'} | Disegno: ${f.dis||'-'}`,'',`AVANZAMENTO GENERALE: ${$('#tot').textContent}`);
+ S.ph.forEach(p=>L.push(` - ${p.n}: ${p.p}%`));
+ if(f.desc)L.push('','ATTIVITÀ SVOLTA:',f.desc);if(f.act)L.push('','AZIONI / PUNTI APERTI:',f.act);
+ const strip=h=>h.replace(/<[^>]+>/g,'');
+ if(S.macros.includes('mech')){L.push('','CONTROLLO DIMENSIONALE:');S.mech.filter(r=>r.d||r.m).forEach(r=>L.push(` - ${r.d||'-'}: teorica ${r.t||'-'} ±${r.tol||'-'} / rilevata ${r.m||'-'} [${r.s||'-'}] ${strip(T.mech.res(r))}`))}
+ if(S.macros.includes('weld')){L.push('','SALDATURA (WPS '+(f.wps||'-')+'):');S.weld.filter(r=>r.j).forEach(r=>L.push(` - ${r.j}: ${r.c||'VT'}, livello ${r.l||'-'}, ${r.e||'-'} ${r.n||''}`))}
+ if(S.macros.includes('paint')){L.push('','PREPARAZIONE VERNICIATURA:',` Pulizia ${f.sa||'-'} (rich. ${f.saReq||'-'}) | Saldature ${f.pg||'-'} (rich. ${f.pgReq||'-'}) | Rugosità ${f.rug||'-'} µm | Polvere ${f.pol||'-'} | Sali ${f.sali||'-'} mg/m²`,' '+strip($('#pst').innerHTML.replace(/<br>/g,' | ')))}
+ if(S.macros.includes('ndft')){L.push('','NDFT (ciclo '+(f.ciclo||'-')+'):');S.ndft.filter(r=>r.nd).forEach(r=>L.push(` - ${r.y||'-'} ${r.pr||''}: NDFT ${r.nd} µm – ${strip(T.ndft.res(r))}`))}
+ if(S.macros.includes('zn')){L.push('','ZINCATURA (ISO 1461):',' '+strip($('#znst').innerHTML.replace(/<br>/g,' | ')),' Strumento: '+(f.zsp||'-')+(f.zrip?' | Riparazioni: '+f.zrip:''))}
+ if(S.macros.includes('cart')){L.push('','CARTELLINATURA: '+(f.cs||'-')+(f.cs=='Da fare entro il'?' '+(f.cd||''):'')+(f.cn?' – '+f.cn:''))}
+ if(S.macros.includes('imb')){L.push('','IMBALLO:');IMB.forEach(([k,n])=>{const x=S.imb[k]||{};L.push(` ${x.c?'[X]':'[ ]'} ${n}${x.v?' – '+x.v:''}${x.n?' – '+x.n:''}`)})}
+ if(S.macros.includes('fn')){L.push('','TEST FUNZIONALI:');S.fn.filter(r=>r.t).forEach(r=>L.push(` - ${r.t}: ${r.p||''} → ${r.e||'-'} ${r.n||''}`))}
+ L.push('',`Foto allegate: ${S.photos.length}`,`ESITO: ${f.esito||'-'}`);return L.join('\n')}
+$('#bSum').onclick=()=>{const t=summary()+sigTxt(),s=$('#sum');s.textContent=t;s.style.display='block';s.scrollIntoView({behavior:'smooth'});try{navigator.clipboard.writeText(t)}catch(e){}};
+$('#bPrint').onclick=()=>window.print();
+$('#bNew').onclick=()=>{if(confirm(_t('Cancellare tutti i dati e iniziare un nuovo report?'))){try{localStorage.removeItem(KEY)}catch(e){}const lg=S.logo;location.reload()}};
+
+/* zincatura */
+const ZD=['Aree non zincate / punti scoperti','Rugosità e grumi','Colature e gocce di zinco','Punte e sbavature di zinco','Inclusioni di cenere o zinco ossidato','Residui di flussante','Bolle (blisters)','Macchie scure / ossidazione','Danni meccanici / graffi','Fori di sfiato o drenaggio ostruiti','Distorsioni / deformazioni','Altro'];
+function renderZd(){$('#zdef').innerHTML=ZD.map((d,i)=>`<label class="ck"><input type="checkbox" data-zd="${i}"${S.zd.includes(d)?' checked':''}><span>${d}</span></label>`).join('')}
+function znSt(){const v=S.f.zst,L=(S.f.zr||'').split(/[\s,;]+/).map(Number).filter(x=>x>0);let h='';
+ if(v&&L.length){const[l,m]=v.split('/').map(Number),a=L.reduce((s,x)=>s+x,0)/L.length,mn=Math.min(...L);h=`${_t('Media')} ${a.toFixed(0)} µm (min ${m}) · ${_t('lettura minima')} ${mn} µm (${_t('locale min')} ${l}) → `+((a>=m&&mn>=l)?stat(_t('CONFORME'),'OK'):stat(_t('DA VERIFICARE'),'NOK'))}
+ h+=(h?'<br>':'')+(S.zd.length?stat(S.zd.length+' '+_t('difetti:')+' '+S.zd.map(d=>_t(d)).join(', '),'NOK'):_t('Nessun difetto visivo segnalato'));$('#znst').innerHTML=h}
+function extra(){znSt();$('#cdw').classList.toggle('hide',S.f.cs!='Da fare entro il')}
+/* imballo */
+const IMB=[['cs','Cassa con saccobarriera'],['pc','Coperchio con plastic cover'],['bt','Bancale con termoretraibile',['S1 – 240 µm','S3 – triplo strato 900 µm']],['fu','Fumigazione ISPM 15 con identificativo su legno'],['vci','VCI (inibitore di corrosione volatile)'],['sl','Sali (disidratanti)'],['se','Simboli esterni'],['sx','Simboli di sollevamento'],['mk','Marcatura']];
+function renderImb(){$('#imb').innerHTML=IMB.map(([k,n,o])=>{const x=S.imb[k]||{};return `<div class="ck"><input type="checkbox" data-ik="${k}"${x.c?' checked':''} aria-label="${n}"><span>${n}</span>${o?`<select data-iv="${k}" style="flex:1 1 100%"><option value="">Tipo</option>${sel(o,x.v)}</select>`:''}<input type="text" data-in="${k}" value="${x.n||''}" placeholder="Note"></div>`}).join('')}
+function fH(e){const t=e.target,d=t.dataset;
+ if(d.zd!=null){const n=ZD[d.zd],i=S.zd.indexOf(n);if(t.checked){if(i<0)S.zd.push(n)}else if(i>=0)S.zd.splice(i,1);znSt();save();return}
+ const k=d.ik||d.iv||d.in;if(k){const x=S.imb[k]=S.imb[k]||{};if(d.ik)x.c=t.checked;else if(d.iv)x.v=t.value;else x.n=t.value;save();return}
+ if(d.sg){const s=S.sig[d.sg]=S.sig[d.sg]||{};s[d.c]=t.value;save()}}
+document.addEventListener('input',fH);document.addEventListener('change',fH);
+/* firme */
+const SG=[['i','Ispettore'],['f','Rappresentante fornitore']];
+function renderSigs(){$('#sigs').innerHTML=SG.map(([k,t])=>{const s=S.sig[k]||{};return `<div class="sg"><b>${t}</b><div class="g" style="margin:8px 0"><div><label>Nome e cognome</label><input data-sg="${k}" data-c="n" value="${s.n||''}"></div><div><label>Ditta</label><input data-sg="${k}" data-c="d" value="${s.d||''}"></div><div><label>Funzione</label><input data-sg="${k}" data-c="f" value="${s.f||''}"></div></div><canvas data-cv="${k}" aria-label="Area firma"></canvas><div class="sb"><button data-sc="${k}">Cancella</button><button data-st="${k}">Firma digitata</button><span class="hint" id="ts-${k}">${s.ts?'Firmato il '+s.ts:''}</span></div></div>`}).join('');SG.forEach(([k])=>initPad(k))}
+function initPad(k){const c=document.querySelector(`[data-cv="${k}"]`),r=window.devicePixelRatio||1,w=c.clientWidth||300,h=Math.round(w/3);c.width=w*r;c.height=h*r;const x=c.getContext('2d');x.scale(r,r);x.lineWidth=2.2;x.lineCap='round';x.lineJoin='round';x.strokeStyle='#111';
+ const im=S.sig[k]&&S.sig[k].img;if(im){const i=new Image();i.onload=()=>x.drawImage(i,0,0,w,h);i.src=im}
+ let d=false;const p=e=>{const b=c.getBoundingClientRect();return[e.clientX-b.left,e.clientY-b.top]};
+ c.onpointerdown=e=>{d=true;try{c.setPointerCapture(e.pointerId)}catch(_){}const[a,b]=p(e);x.beginPath();x.moveTo(a,b);x.lineTo(a+.1,b+.1);x.stroke();e.preventDefault()};
+ c.onpointermove=e=>{if(!d)return;const[a,b]=p(e);x.lineTo(a,b);x.stroke();x.beginPath();x.moveTo(a,b)};
+ const up=()=>{if(!d)return;d=false;stamp(k,c)};c.onpointerup=up;c.onpointercancel=up}
+function stamp(k,c){const s=S.sig[k]=S.sig[k]||{};s.img=c.toDataURL('image/png');s.ts=new Date().toLocaleString(LANG=='en'?'en-GB':'it-IT');const t=$('#ts-'+k);if(t)t.textContent=_t('Firmato il')+' '+s.ts;save()}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset,k=d.sc||d.st;if(!k)return;const c=document.querySelector(`[data-cv="${k}"]`),x=c.getContext('2d');
+ const clr=()=>{x.save();x.setTransform(1,0,0,1,0,0);x.clearRect(0,0,c.width,c.height);x.restore()};
+ if(d.sc){clr();const s=S.sig[k]||{};delete s.img;delete s.ts;$('#ts-'+k).textContent='';save()}
+ if(d.st){const n=(S.sig[k]||{}).n;if(!n){alert(_t('Inserisci prima nome e cognome.'));return}clr();x.save();const ch=c.clientHeight||100;x.font='italic '+Math.round(ch*.4)+'px "Segoe Script","Brush Script MT","Snell Roundhand",cursive';x.fillStyle='#111';x.fillText(n,10,ch*.62,(c.clientWidth||300)-20);x.restore();stamp(k,c)}});
+function sigTxt(){return '\n\nFIRME:\n'+SG.map(([k,t])=>{const s=S.sig[k]||{};return ` - ${t}: ${s.n||'-'} | ${s.d||'-'} | ${s.f||'-'} | ${s.img?'firmato il '+s.ts:'non firmato'}`}).join('\n')}
+
+load();migPh();bindFields();renderPh();renderMac();['mech','weld','ndft','fn'].forEach(renderT);renderPhotos();showLogo();paintSt();renderZd();renderImb();renderSigs();extra();
+</script>
+<script>
+Object.assign(EN,{
+'Report di ispezione':'Inspection report','Tocca per caricare il logo':'Tap to upload the logo',
+'Dati ispezione':'Inspection data','Cliente':'Customer','Nr Ordine':'Order no.','Riga ordine':'Order line','Descrizione':'Description','Data richiesta (planned)':'Requested date (planned)','Data stimata (actual)':'Estimated date (actual)','Fornitore':'Supplier','Luogo':'Location','Disegno / rev.':'Drawing / rev.',
+'Avanzamento':'Progress','+ Fase':'+ Phase','Fase':'Phase','Elimina':'Delete','Percentuale':'Percentage','Detta percentuale':'Dictate percentage','Detta':'Dictate','Materiali':'Materials','Lavorazioni meccaniche':'Machining','Saldatura':'Welding','Controlli / NDT':'Inspection / NDT','Verniciatura':'Painting','Montaggio e test':'Assembly and testing','Imballo e spedizione':'Packing and shipping','Nuova fase':'New phase','Acquisto':'Purchasing','Arrivo materiali':'Material arrival','Saldature':'Welding','Montaggio':'Assembly','Imballaggio':'Packing','Documentazione':'Documentation',
+'Attività svolta in ispezione':'Activity carried out during inspection','Cosa è stato verificato, esiti, azioni, punti aperti…':'What was checked, results, actions, open points…',
+'Sezione tecnica':'Technical section','Seleziona le macro attività produttive verificate.':'Select the production macro-activities checked.',
+'Lavorazione meccanica':'Machining','Preparazione verniciatura':'Painting preparation','Verniciatura NDFT':'Painting NDFT','Zincatura':'Galvanizing','Cartellinatura':'Tagging / labelling','Imballo':'Packing','Test funzionali':'Functional tests',
+'Lavorazione meccanica – controllo dimensionale':'Machining – dimensional check','+ Quota':'+ Dimension','Quota / descrizione':'Dimension / description','Teorica':'Theoretical','Tolleranza ±':'Tolerance ±','Rilevata':'Measured','Strumento':'Instrument','Matricola / cert. tar.':'Serial no. / calibration cert.',
+'Calibro':'Caliper','Micrometro esterno':'Outside micrometer','Micrometro interno':'Inside micrometer','Comparatore':'Dial indicator','Truschino':'Height gauge','Metro / flessometro':'Tape measure','Rugosimetro':'Roughness tester','Alesametro':'Bore gauge','Tastatore / CMM':'Probe / CMM','Dima / calibro passa-non passa':'Template / go-no-go gauge','Altro':'Other',
+'Saldatura – controlli':'Welding – inspections','Livelli di qualità ISO 5817 (acciaio): B stringente, C intermedio, D moderato. Alluminio: ISO 10042.':'ISO 5817 quality levels (steel): B stringent, C intermediate, D moderate. Aluminium: ISO 10042.','Qualifica saldatori (ISO 9606-1)':'Welder qualification (ISO 9606-1)','+ Giunto':'+ Joint','Giunto / pos.':'Joint / pos.','Processo (ISO 4063)':'Process (ISO 4063)','Controllo':'Inspection','Livello ISO 5817':'ISO 5817 level','Estensione %':'Extent %','Esito':'Result','Note':'Notes','Accettabile':'Acceptable','Non accettabile':'Not acceptable','Da riparare':'To be repaired','Riparato OK':'Repaired OK','Controllo dimensionale giunto':'Joint dimensional check',
+'Preparazione alla verniciatura':'Painting preparation','Grado pulizia – ISO 8501-1':'Cleanliness grade – ISO 8501-1','Grado saldature – EN ISO 8501-3':'Weld preparation grade – EN ISO 8501-3','Richiesti da specifica':'Required by specification','Es. Sa 2½':'E.g. Sa 2½','Es. P2':'E.g. P2','Profilo rugosità – ISO 8503 (µm)':'Roughness profile – ISO 8503 (µm)','Polvere – ISO 8502-3 (grado)':'Dust – ISO 8502-3 (rating)','Sali solubili – ISO 8502-6/9 (mg/m²)':'Soluble salts – ISO 8502-6/9 (mg/m²)','T aria (°C)':'Air T (°C)','T acciaio (°C)':'Steel T (°C)','Umidità relativa (%)':'Relative humidity (%)',
+'P1 preparazione leggera · P2 accurata · P3 molto accurata (spigoli arrotondati, spruzzi e difetti rimossi). Acciaio ≥ 3 °C sopra il punto di rugiada.':'P1 light preparation · P2 thorough · P3 very thorough (rounded edges, spatter and defects removed). Steel ≥ 3 °C above dew point.',
+'Verniciatura – controllo NDFT':'Painting – NDFT check','Misura DFT secondo ISO 19840 (superfici rugose) / ISO 2808. Criterio 80/20 (ISO 12944-5): nessuna lettura sotto 80 % NDFT, media ≥ NDFT, massimo ≤ 3 × NDFT salvo scheda tecnica.':'DFT measurement per ISO 19840 (rough surfaces) / ISO 2808. 80/20 rule (ISO 12944-5): no reading below 80 % NDFT, mean ≥ NDFT, maximum ≤ 3 × NDFT unless the datasheet states otherwise.','Sistema / ciclo (ISO 12944)':'System / cycle (ISO 12944)','Es. C4 H':'E.g. C4 H','Spessimetro':'DFT gauge','+ Strato':'+ Coat','Strato':'Coat','Prodotto':'Product','Letture µm (spazio o virgola)':'Readings µm (space or comma)','Intermedio':'Intermediate','Finitura':'Topcoat',
+'Zincatura a caldo – ISO 1461':'Hot-dip galvanizing – ISO 1461','ISO 1461: zincatura a caldo per immersione. Spessore con metodo magnetico ISO 2178. Guida alla durabilità: EN ISO 14713. Valori minimi indicativi: verifica la specifica d’ordine.':'ISO 1461: hot-dip galvanizing. Thickness by magnetic method ISO 2178. Durability guidance: EN ISO 14713. Minimum values are indicative: check the order specification.','Categoria / spessore acciaio':'Steel category / thickness',
+'Acciaio > 6 mm (loc. 70 / medio 85 µm)':'Steel > 6 mm (local 70 / mean 85 µm)','Acciaio 3–6 mm (55 / 70 µm)':'Steel 3–6 mm (55 / 70 µm)','Acciaio 1,5–3 mm (45 / 55 µm)':'Steel 1.5–3 mm (45 / 55 µm)','Acciaio < 1,5 mm (35 / 45 µm)':'Steel < 1.5 mm (35 / 45 µm)','Getti ≥ 6 mm (70 / 80 µm)':'Castings ≥ 6 mm (70 / 80 µm)','Getti < 6 mm (60 / 70 µm)':'Castings < 6 mm (60 / 70 µm)',
+'Strumento (ISO 2178)':'Instrument (ISO 2178)','Letture spessore µm (spazio o virgola)':'Thickness readings µm (space or comma)','Riparazioni / ritocchi eseguiti':'Repairs / touch-ups carried out','Difetti visivi riscontrati':'Visual defects found',
+'Aree non zincate / punti scoperti':'Uncoated areas / bare spots','Rugosità e grumi':'Roughness and lumps','Colature e gocce di zinco':'Runs and drips of zinc','Punte e sbavature di zinco':'Zinc spikes and burrs','Inclusioni di cenere o zinco ossidato':'Ash / oxidized zinc inclusions','Residui di flussante':'Flux residues','Bolle (blisters)':'Blisters','Macchie scure / ossidazione':'Dark stains / oxidation','Danni meccanici / graffi':'Mechanical damage / scratches','Fori di sfiato o drenaggio ostruiti':'Blocked vent or drain holes','Distorsioni / deformazioni':'Distortion / deformation',
+'Da fare entro il':'To be done by','Note (contenuto cartellini, posizione)':'Notes (tag content, position)',
+'Imballo secondo specifica':'Packing per specification','Spunta le voci richieste e verificate. Quelle non spuntate restano visibili nel report.':'Tick the items required and checked. Unticked items remain visible in the report.','Cassa con saccobarriera':'Crate with moisture barrier bag','Coperchio con plastic cover':'Lid with plastic cover','Bancale con termoretraibile':'Pallet with shrink wrap','S3 – triplo strato 900 µm':'S3 – triple layer 900 µm','Tipo':'Type','Fumigazione ISPM 15 con identificativo su legno':'ISPM 15 fumigation with mark on wood','VCI (inibitore di corrosione volatile)':'VCI (volatile corrosion inhibitor)','Sali (disidratanti)':'Salts (desiccants)','Simboli esterni':'External symbols','Simboli di sollevamento':'Lifting symbols','Marcatura':'Marking',
+'+ Test':'+ Test','Test':'Test','Parametri / valori':'Parameters / values','Prova a vuoto':'No-load test','Prova idraulica':'Hydraulic test','Prova pneumatica':'Pneumatic test','Prova di tenuta':'Leak test','Prova di carico':'Load test','Prova elettrica / isolamento':'Electrical / insulation test','Prova di rotazione':'Rotation test','Prova di pressione':'Pressure test','Prova di funzionamento':'Operating test','Positivo':'Positive','Negativo':'Negative','Non eseguito':'Not performed','Da ripetere':'To be repeated',
+'Foto':'Photos','📷 Scatta':'📷 Take photo','Galleria':'Gallery','Didascalia':'Caption','Elimina foto':'Delete photo',
+'Esito generale':'Overall result','Esito ispezione':'Inspection result','Conforme':'Compliant','Conforme con riserve':'Compliant with reservations','Non conforme':'Non-compliant','Ispezione da ripetere':'Inspection to be repeated','Prossima ispezione / data pronto merce':'Next inspection / goods ready date',
+'Azioni da eseguire':'Actions to be taken','+ Azione':'+ Action','Azione':'Action','Chi':'Who','Entro il':'Due by',
+'Firme':'Signatures','Data del report':'Report date','Ispettore':'Inspector','Rappresentante fornitore':'Supplier representative','Nome e cognome':'First and last name','Ditta':'Company','Funzione':'Function / role','Cancella':'Clear','Firma digitata':'Typed signature','Area firma':'Signature area','+ Partecipante':'+ Participant','Firmato il':'Signed on',
+'Aggiungi documento':'Add document','Scansiona o fotografa il documento: viene allegato al report a tutta pagina.':'Scan or photograph the document: it is attached to the report as a full page.','📄 Scansiona documento':'📄 Scan document','📷 Foto documento':'📷 Photograph document','Titolo documento (es. certificato, disegno)':'Document title (e.g. certificate, drawing)','Documento':'Document',
+'Riepilogo':'Summary','Stampa / PDF':'Print / PDF','Nuovo':'New',
+'CONFORME':'COMPLIANT','FUORI TOLLERANZA':'OUT OF TOLERANCE','NON CONFORME':'NON-COMPLIANT','DA VERIFICARE':'TO BE VERIFIED','media':'mean','Media':'Mean','lettura minima':'min. reading','locale min':'local min','Punto di rugiada':'Dew point','acciaio':'steel','OK applicazione':'OK to apply','SOTTO +3 °C: non verniciare':'BELOW +3 °C: do not paint','pulizia conforme':'cleanliness compliant','pulizia diversa dalla richiesta':'cleanliness differs from required','P conforme':'P grade compliant','P diverso dal richiesto':'P grade differs from required','difetti:':'defects:','Nessun difetto visivo segnalato':'No visual defects reported',
+'Dettatura non supportata qui: usa il microfono della tastiera del telefono.':'Dictation is not supported here: use your keyboard’s microphone.','Cancellare tutti i dati e iniziare un nuovo report?':'Delete all data and start a new report?','Inserisci prima nome e cognome.':'Enter first and last name first.'});
+
+const bi=(a,b)=>LANG=='en'?b:a;
+const DEFCLI='Danieli & C. Officine Meccaniche spa';
+const ORIG=new WeakMap(),ATT=['placeholder','aria-label','title'];
+function trNode(n){
+ if(n.nodeType==3){let o=ORIG.get(n);if(o==null){o=n.nodeValue;ORIG.set(n,o)}const k=o.trim().replace(/\s+/g,' ');if(!k)return;const e=LANG=='en'&&EN[k];const v=e?o.replace(o.trim(),e):o;if(n.nodeValue!==v)n.nodeValue=v;return}
+ if(n.nodeType!=1||/^(SCRIPT|STYLE)$/.test(n.tagName))return;
+ if(n.tagName=='OPTION'&&!n.hasAttribute('value'))n.setAttribute('value',n.textContent);
+ ATT.forEach(a=>{if(n.hasAttribute(a)){n._o=n._o||{};if(n._o[a]==null)n._o[a]=n.getAttribute(a);const v=(LANG=='en'&&EN[n._o[a]])||n._o[a];if(n.getAttribute(a)!==v)n.setAttribute(a,v)}});
+ if(n.tagName=='TEXTAREA'||(n.classList&&n.classList.contains('tp')))return;
+ n.childNodes.forEach(trNode)}
+function applyLang(){trNode(document.body);document.title=LANG=='en'?'Danieli – Inspection report':'Danieli – Report di ispezione'}
+new MutationObserver(ms=>{if(LANG!='en')return;ms.forEach(m=>m.addedNodes.forEach(trNode))}).observe(document.body,{childList:true,subtree:true});
+const PHN=[...PH0,'Nuova fase'];
+const convPh=n=>{if(LANG=='en')return EN[n]||n;const i=PHN.findIndex(p=>EN[p]==n);return i<0?n:PHN[i]};
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+
+/* salvataggio con fallback senza immagini grandi */
+save=function(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){try{localStorage.setItem(KEY,JSON.stringify(Object.assign({},S,{docs:[],photos:[],xl:null})))}catch(e2){}}};
+
+/* azioni */
+T.az={cols:[['a','Azione','t'],['w','Chi','t'],['d','Entro il','d']],res:()=>''};
+S.az=S.az&&S.az.length?S.az:[{}];
+S.docs=S.docs||[];S.sgl=S.sgl||['i','f'];
+
+/* documenti annex */
+let dmode='scan';
+function procDoc(f,scan,cb){const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const m=1600,s=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;const g=c.getContext('2d');if(scan)g.filter='grayscale(1) contrast(1.5) brightness(1.1)';g.drawImage(im,0,0,c.width,c.height);cb(c.toDataURL('image/jpeg',.72))};im.src=r.result};r.readAsDataURL(f)}
+$('#dcScan').onclick=()=>{dmode='scan';$('#dcIn').click()};
+$('#dcFoto').onclick=()=>{dmode='foto';$('#dcIn').click()};
+$('#dcIn').onchange=e=>{const m=dmode;[...e.target.files].forEach(f=>procDoc(f,m=='scan',u=>{S.docs.push({u,c:'',m});renderDocs();save()}));e.target.value=''};
+function renderDocs(){$('#docs').innerHTML=S.docs.map((d,i)=>`<div class="d"><div style="display:flex;gap:8px;align-items:center"><input data-dc="${i}" value="${esc(d.c)}" placeholder="Titolo documento (es. certificato, disegno)"><button class="x" data-ddel="${i}" aria-label="Elimina">✕</button></div><img src="${d.u}" alt="${bi('Documento','Document')} ${i+1}"></div>`).join('')}
+document.addEventListener('input',e=>{const i=e.target.dataset.dc;if(i!=null){S.docs[i].c=e.target.value;save()}});
+
+/* firme dinamiche */
+const sgT=(k,i)=>k=='i'?bi('Ispettore','Inspector'):k=='f'?bi('Rappresentante fornitore','Supplier representative'):bi('Partecipante','Participant')+' '+(i-1);
+renderSigs=function(){$('#sigs').innerHTML=S.sgl.map((k,i)=>{const s=S.sig[k]||{};return `<div class="sg"><b>${sgT(k,i)}</b>${i>1?`<button class="x" data-sd="${k}" aria-label="Elimina">✕</button>`:''}<div class="g" style="margin:8px 0"><div><label>Nome e cognome</label><input data-sg="${k}" data-c="n" value="${esc(s.n)}"></div><div><label>Ditta</label><input data-sg="${k}" data-c="d" value="${esc(s.d)}"></div><div><label>Funzione</label><input data-sg="${k}" data-c="f" value="${esc(s.f)}"></div></div><canvas data-cv="${k}" aria-label="Area firma"></canvas><div class="sb"><button data-sc="${k}">Cancella</button><button data-st="${k}">Firma digitata</button><span class="hint" id="ts-${k}">${s.ts?bi('Firmato il','Signed on')+' '+s.ts:''}</span></div></div>`}).join('')+`<button id="addSg">+ Partecipante</button>`;S.sgl.forEach(initPad)};
+sigTxt=function(){return ''};
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ if(b.id=='addSg'){S.sgl.push('p'+Date.now());renderSigs();save()}
+ if(b.dataset.sd){S.sgl=S.sgl.filter(k=>k!=b.dataset.sd);delete S.sig[b.dataset.sd];renderSigs();save()}
+ if(b.dataset.ddel!=null){S.docs.splice(+b.dataset.ddel,1);renderDocs();save()}});
+
+/* lingua */
+function setLang(l){LANG=l;S.f.lang=l;document.documentElement.lang=l;S.ph.forEach(p=>p.n=convPh(p.n));
+ renderPh();renderMac();['mech','weld','ndft','fn','az'].concat((typeof T!=='undefined'&&T.ords)?['ndt','ords']:(typeof T!=='undefined'&&T.ndt?['ndt']:[])).forEach(renderT);renderZd();renderImb();renderSigs();renderPhotos();if(typeof renderPg=='function')renderPg();renderDocs();paintSt();extra();
+ $$('[data-lang]').forEach(b=>b.classList.toggle('on',b.dataset.lang==l));applyLang();save()}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-lang]');if(b)setLang(b.dataset.lang)});
+
+/* riepilogo bilingue */
+summary=function(){const f=S.f,L=[],strip=h=>h.replace(/<[^>]+>/g,''),v=a=>a||'-';
+ L.push(bi('DANIELI – REPORT DI ISPEZIONE','DANIELI – INSPECTION REPORT'),
+ bi('Cliente','Customer')+': '+v(f.cli),
+ ordersTxt(),
+ bi('Fornitore','Supplier')+': '+v(f.forn)+' | '+bi('Luogo','Location')+': '+v(f.luogo)+' | '+bi('Disegno','Drawing')+': '+v(f.dis),
+ '',bi('AVANZAMENTO','PROGRESS')+':');
+ S.ph.forEach(p=>L.push(' - '+p.n+': '+p.p+'%'+(p.d?' | expected '+p.d:'')));
+ if(f.desc)L.push('',bi('ATTIVITÀ SVOLTA:','ACTIVITY CARRIED OUT:'),f.desc);
+ if(S.macros.includes('mech')){L.push('',bi('CONTROLLO DIMENSIONALE:','DIMENSIONAL CHECK:'));S.mech.filter(r=>r.d||r.m).forEach(r=>L.push(` - ${v(r.d)}: ${bi('teorica','theoretical')} ${v(r.t)} ±${v(r.tol)} / ${bi('rilevata','measured')} ${v(r.m)} [${_t(v(r.s))}] ${strip(T.mech.res(r))}`))}
+ if(S.macros.includes('weld')){L.push('',bi('SALDATURE (collaudo per singola saldatura):','WELDS (inspection per individual weld):'));S.weld.filter(r=>r.j).forEach(r=>L.push(` - ${r.j} | ${v(r.p)} | ${_t(v(r.tg))} | ${v(r.pr)} | WPS ${v(r.w)} | ${bi('saldatore','welder')} ${v(r.sd)} | ${v(r.mb)} ${v(r.sp)}mm x ${v(r.ln)}mm | ISO 5817 ${v(r.l)} | VT: ${_t(v(r.e))} ${r.n||''}`))}
+ if(S.macros.includes('paint')){L.push('',bi('PREPARAZIONE VERNICIATURA:','PAINTING PREPARATION:'),` ${bi('Pulizia','Cleanliness')} ${v(f.sa)} (${bi('rich.','req.')} ${v(f.saReq)}) | ${bi('Saldature','Welds')} ${v(f.pg)} (${bi('rich.','req.')} ${v(f.pgReq)}) | ${bi('Rugosità','Roughness')} ${v(f.rug)} µm | ${bi('Polvere','Dust')} ${v(f.pol)} | ${bi('Sali','Salts')} ${v(f.sali)} mg/m²`,' '+strip($('#pst').innerHTML.replace(/<br>/g,' | ')))}
+ if(S.macros.includes('ndft')){L.push('','NDFT ('+bi('ciclo','system')+' '+v(f.ciclo)+'):');S.ndft.filter(r=>r.nd).forEach(r=>L.push(` - ${_t(v(r.y))} ${r.pr||''}: NDFT ${r.nd} µm – ${strip(T.ndft.res(r))}`))}
+ if(S.macros.includes('zn')){L.push('',bi('ZINCATURA','GALVANIZING')+' (ISO 1461):',' '+strip($('#znst').innerHTML.replace(/<br>/g,' | ')),' '+bi('Strumento','Instrument')+': '+v(f.zsp)+(f.zrip?' | '+bi('Riparazioni','Repairs')+': '+f.zrip:''))}
+ if(S.macros.includes('cart')){L.push('',bi('CARTELLINATURA','TAGGING')+': '+_t(v(f.cs))+(f.cs=='Da fare entro il'?' '+(f.cd||''):'')+(f.cn?' – '+f.cn:''))}
+ if(S.macros.includes('imb')){L.push('',bi('IMBALLO:','PACKING:'));IMB.forEach(([k,n])=>{const q=S.imb[k]||{};if(!q.c)return;L.push(` ${q.c?'[X]':'[ ]'} ${_t(n)}${q.v?' – '+_t(q.v):''}${q.n?' – '+q.n:''}`)})}
+ if(S.macros.includes('fn')){L.push('',bi('TEST FUNZIONALI:','FUNCTIONAL TESTS:'));S.fn.filter(r=>r.t).forEach(r=>L.push(` - ${_t(v(r.t))}: ${r.p||''} → ${_t(v(r.e))} ${r.n||''}`))}
+ L.push('',bi('Foto allegate','Photos attached')+': '+photoCount()+' | '+bi('Documenti allegati','Documents attached')+': '+S.docs.length,bi('ESITO','RESULT')+': '+_t(v(f.esito)));
+ const az=S.az.filter(r=>r.a);if(az.length){L.push('',bi('AZIONI DA ESEGUIRE:','ACTIONS TO BE TAKEN:'));az.forEach(r=>L.push(` - ${r.a} | ${bi('chi','who')}: ${v(r.w)} | ${bi('entro il','due by')}: ${v(r.d)}`))}
+ L.push('',bi('FIRME','SIGNATURES')+' – '+bi('Data del report','Report date')+': '+v(f.rdata));
+ S.sgl.forEach((k,i)=>{const s=S.sig[k]||{};L.push(` - ${sgT(k,i)}: ${v(s.n)} | ${v(s.d)} | ${v(s.f)} | ${s.img?bi('firmato il','signed on')+' '+s.ts:bi('non firmato','not signed')}`)});
+ return L.join('\n')};
+
+/* avvio */
+(function(){const d=new Date(),iso=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+ if(!S.f.rdata){S.f.rdata=iso;$('[data-f=rdata]').value=iso}
+ if(S.f.cli===DEFCLI){S.f.cli='';$('[data-f=cli]').value=''}
+ setLang(S.f.lang||'it')})();
+</script>
+<script>
+function syncPr(){const f=S.f;$('#prLogo').src=$('#logo').src;
+ $('#prT').innerHTML='<b>Danieli &amp; C. Officine Meccaniche spa</b><br>'+esc(bi('Report di ispezione','Inspection report')+' – '+bi('Ordine','Order')+' '+(typeof ordLabel=='function'?ordLabel():'-')+(f.cli?' – '+bi('Cliente','Customer')+': '+f.cli:'')+(f.forn?' – '+f.forn:''));const cl=$('#prCl');if(S.clogo){cl.src=S.clogo;cl.style.display='block'}else cl.style.display='none';
+ let s=$('#pgst');if(!s){s=document.createElement('style');s.id='pgst';document.head.appendChild(s)}
+ s.textContent='@page{margin:12mm 10mm 14mm;@bottom-right{content:"'+bi('Pagina','Page')+' " counter(page) " '+bi('di','of')+' " counter(pages);font:10px sans-serif;color:#5d6873}}'}
+window.addEventListener('beforeprint',syncPr);
+$('#bPrint').onclick=()=>{syncPr();window.print()};
+syncPr();
+</script>
+<script>
+Object.assign(EN,{'Analisi quality book':'Quality book analysis','Collaudi tecnici – Analisi quality book':'Technical tests – Quality book analysis','Esito analisi':'Analysis result','Accettabile – OK caricare su DVCP':'Acceptable – OK to upload to DVCP','Non accettabile – completare e caricare su DVCP':'Not acceptable – complete and upload to DVCP','Completare entro il':'Complete by','Caricare su DVCP entro il':'Upload to DVCP by','Note analisi quality book':'Quality book analysis notes','Documenti ispettore terzo (annex)':'Third-party inspector documents (annex)','📄 Scansiona documento ispettore terzo':'📄 Scan third-party inspector document','📷 Foto':'📷 Photo'});
+MAC.splice(MAC.findIndex(m=>m[0]=='fn'),0,['qb','Documentazione e quality book']);
+MAC.forEach(([k])=>{const s=$('#s-'+k);if(s&&!s.querySelector('.sdoc'))s.insertAdjacentHTML('beforeend',`<div class="sdoc" data-sec="${k}"><label>Documenti ispettore terzo (annex)</label><div class="btns" style="display:flex;gap:8px;flex-wrap:wrap"><button data-dscan="${k}">📄 Scansiona documento ispettore terzo</button><button data-dfoto="${k}">📷 Foto</button><button data-dgal="${k}">🖼️ Galleria</button></div><div class="dl"></div></div>`)});
+extra=function(){znSt();$('#cdw').classList.toggle('hide',S.f.cs!='Da fare entro il');const n=(S.f.qbs||'').startsWith('Non');$('#qbd1').classList.toggle('hide',!n);$('#qbd2').classList.toggle('hide',!n)};
+renderDocs=function(){const card=(d,i)=>`<div class="d"><div style="display:flex;gap:8px;align-items:center"><input data-dc="${i}" value="${esc(d.c)}" placeholder="Titolo documento (es. certificato, disegno)"><button class="x" data-ddel="${i}" aria-label="Elimina">✕</button></div><img src="${d.u}" alt="${bi('Documento','Document')} ${i+1}"></div>`;
+ const all=S.docs.map((d,i)=>[d,i]);
+ $('#docs').innerHTML=all.filter(([d])=>!d.s||d.s=='gen').map(([d,i])=>card(d,i)).join('');
+ $$('.sdoc').forEach(b=>{b.querySelector('.dl').innerHTML=all.filter(([d])=>d.s==b.dataset.sec).map(([d,i])=>card(d,i)).join('')})};
+let dsec='gen';
+const defTitle=k=>bi('Documento ispettore terzo','Third-party inspector document')+' – '+_t((MAC.find(m=>m[0]==k)||[0,k])[1]);
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;if(d.dscan||d.dfoto){dsec=d.dscan||d.dfoto;dmode=d.dscan?'scan':'foto';$('#dcIn').click()}});
+$('#dcScan').onclick=()=>{dsec='gen';dmode='scan';$('#dcIn').click()};
+$('#dcFoto').onclick=()=>{dsec='gen';dmode='foto';$('#dcIn').click()};
+$('#dcIn').onchange=e=>{const m=dmode,sc=dsec;[...e.target.files].forEach(f=>procDoc(f,m=='scan',u=>{S.docs.push({u,c:sc=='gen'?'':defTitle(sc),m,s:sc});renderDocs();save()}));e.target.value=''};
+const _sum=summary;
+summary=function(){let t=_sum();const f=S.f,v=a=>a||'-';let q='';
+ if(S.macros.includes('qb'))q+='\n\n'+bi('DOCUMENTAZIONE E QUALITY BOOK:','DOCUMENTATION AND QUALITY BOOK:')+' '+_t(v(f.qbs))+((f.qbs||'').startsWith('Non')?' | '+bi('completare entro il','complete by')+' '+v(f.qbc)+' | '+bi('caricare su DVCP entro il','upload to DVCP by')+' '+v(f.qbu):'')+(f.qbn?'\n '+f.qbn:'');
+ const dd=S.docs.filter(d=>d.s&&d.s!='gen');if(dd.length)q+='\n\n'+bi('ANNEX DOCUMENTI ISPETTORE TERZO:','THIRD-PARTY INSPECTOR DOCUMENTS:')+'\n'+dd.map(d=>' - '+(d.c||'-')).join('\n');
+ const key='\n\n'+bi('Foto allegate','Photos attached'),i=t.indexOf(key);return i<0?t+q:t.slice(0,i)+q+t.slice(i)};
+renderMac();extra();renderDocs();applyLang();
+</script>
+<script>
+Object.assign(EN,{'Nome cliente':'Customer name','🖼️ Logo cliente':'🖼️ Customer logo'});
+function clUi(){const t=$('#clThumb');t.style.display=S.clogo?'block':'none';if(S.clogo)t.src=S.clogo;$('#clDel').style.display=S.clogo?'inline-block':'none'}
+$('#clBtn').onclick=()=>$('#clIn').click();
+$('#clIn').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const m=400,s=Math.min(1,m/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*s;c.height=im.height*s;const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,c.width,c.height);g.drawImage(im,0,0,c.width,c.height);S.clogo=c.toDataURL('image/jpeg',.85);clUi();save()};im.src=r.result};r.readAsDataURL(f)};
+$('#clDel').onclick=()=>{S.clogo='';clUi();save()};
+const _sum2=summary;summary=function(){return _sum2().replace(/^DANIELI – /,'Danieli & C. Officine Meccaniche spa\n')};
+clUi();syncPr();applyLang();
+</script>
+<script>
+Object.assign(EN,{
+'Saldatura – collaudo per singola saldatura':'Welding – inspection of each individual weld','+ Saldatura':'+ Weld','ID saldatura / giunto':'Weld ID / joint','Posizione / componente (disegno)':'Position / component (drawing)','Tipo giunto':'Joint type','WPS / WPQR':'WPS / WPQR','Saldatore (nome / stampino) – ISO 9606-1':'Welder (name / stamp) – ISO 9606-1','Materiale base':'Base material','Spessore (mm)':'Thickness (mm)','Lunghezza (mm)':'Length (mm)','Esito VT':'VT result','Testa a testa':'Butt weld','Ad angolo (cordone d’angolo)':'Fillet weld','A T':'T-joint','Sovrapposto':'Lap joint','Angolo esterno':'Corner joint',
+'Controlli NDT':'NDT inspections','Per ogni controllo scegli la saldatura, il metodo, la norma di accettabilità (es. ISO 5817) e la classe. I riferimenti tecnici del metodo compaiono in automatico. Selezione dei metodi: EN ISO 17635. Qualifica del personale: ISO 9712. Verifica sempre l’edizione vigente.':'For each inspection choose the weld, the method, the acceptance standard (e.g. ISO 5817) and the class. The technical references of the method appear automatically. Method selection: EN ISO 17635. Personnel qualification: ISO 9712. Always check the current edition.','+ Controllo NDT':'+ NDT inspection','Saldatura / giunto':'Weld / joint','Metodo NDT':'NDT method','Norma di accettabilità':'Acceptance standard','Classe / livello':'Class / level','Rapporto NDT nr':'NDT report no.','Operatore / livello (ISO 9712)':'Operator / level (ISO 9712)',
+'VT – Esame visivo':'VT – Visual testing','PT – Liquidi penetranti':'PT – Penetrant testing','MT – Particelle magnetiche':'MT – Magnetic particle testing','UT – Ultrasuoni':'UT – Ultrasonic testing','PAUT – Ultrasuoni phased array':'PAUT – Phased array ultrasonic testing','TOFD – Time of flight diffraction':'TOFD – Time of flight diffraction','RT – Radiografia (pellicola)':'RT – Radiography (film)','RT – Radiografia digitale (CR/DR)':'RT – Digital radiography (CR/DR)','ET – Correnti indotte':'ET – Eddy current testing','LT – Prova di tenuta':'LT – Leak testing','AT – Emissione acustica':'AT – Acoustic emission testing','IRT – Termografia':'IRT – Thermographic testing',
+'ISO 5817 (acciaio)':'ISO 5817 (steel)','ISO 10042 (alluminio)':'ISO 10042 (aluminium)','EN ISO 10675-1 (RT acciaio)':'EN ISO 10675-1 (RT steel)','EN ISO 10675-2 (RT alluminio)':'EN ISO 10675-2 (RT aluminium)','Specifica cliente':'Customer specification','Da specifica':'Per specification','Riferimenti tecnici':'Technical references','Accettabilità':'Acceptance','classe':'class',
+'Foto':'Photos','+ Gruppo foto':'+ Photo group','Titolo / didascalia gruppo':'Group title / caption','Didascalia foto':'Photo caption','🖼️ Galleria':'🖼️ Gallery','Documentazione e quality book':'Documentation and quality book'});
+const NM=['VT – Esame visivo','PT – Liquidi penetranti','MT – Particelle magnetiche','UT – Ultrasuoni','PAUT – Ultrasuoni phased array','TOFD – Time of flight diffraction','RT – Radiografia (pellicola)','RT – Radiografia digitale (CR/DR)','ET – Correnti indotte','LT – Prova di tenuta','AT – Emissione acustica','IRT – Termografia','Altro'];
+const NR={'VT – Esame visivo':'EN ISO 17637 · EN 13018','PT – Liquidi penetranti':'EN ISO 3452-1 · ISO 3452-2/-3/-4','MT – Particelle magnetiche':'EN ISO 17638 · ISO 9934-1/-2/-3','UT – Ultrasuoni':'EN ISO 17640 · ISO 16810','PAUT – Ultrasuoni phased array':'ISO 13588','TOFD – Time of flight diffraction':'EN ISO 10863','RT – Radiografia (pellicola)':'EN ISO 17636-1 · ISO 19232','RT – Radiografia digitale (CR/DR)':'EN ISO 17636-2 · ISO 19232','ET – Correnti indotte':'EN ISO 17643 · EN ISO 15549','LT – Prova di tenuta':'EN 1779','AT – Emissione acustica':'EN 13554','IRT – Termografia':'EN 17119'};
+const NAC=['ISO 5817 (acciaio)','ISO 10042 (alluminio)','EN ISO 23278 (MT)','EN ISO 23277 (PT)','EN ISO 11666 (UT)','ISO 19285 (PAUT)','ISO 15626 (TOFD)','EN ISO 10675-1 (RT acciaio)','EN ISO 10675-2 (RT alluminio)','Specifica cliente'];
+const NCL=['B','C','D','1','2','3','2X','3X','Da specifica'];
+S.ndt=S.ndt&&S.ndt.length?S.ndt:[{}];
+const bad=e=>e=='Non accettabile'||e=='Da riparare';
+T.weld.cols=[['j','ID saldatura / giunto','t'],['p','Posizione / componente (disegno)','t'],['tg','Tipo giunto','s',['Testa a testa','Ad angolo (cordone d’angolo)','A T','Sovrapposto','Angolo esterno','Altro']],['pr','Processo (ISO 4063)','s',['111 – Elettrodo rivestito (MMA)', '114 – Filo animato autoprotetto', '121 – Arco sommerso (SAW) a filo', '131 – MIG a filo pieno (gas inerte)', '135 – MAG a filo pieno (gas attivo)', '136 – MAG a filo animato (gas attivo)', '137 – MIG a filo animato (gas inerte)', '141 – TIG (elettrodo di tungsteno, gas inerte)', '15 – Plasma', '311 – Ossiacetilenica', '52 – Laser', '783 – Saldatura di prigionieri (stud)', 'Altro']],['w','WPS / WPQR','t'],['sd','Saldatore (nome / stampino) – ISO 9606-1','t'],['mb','Materiale base','t'],['sp','Spessore (mm)','n'],['ln','Lunghezza (mm)','n'],['l','Livello ISO 5817','s',['B','C','D']],['e','Esito VT','s',['Accettabile','Non accettabile','Da riparare','Riparato OK']],['n','Note','t']];
+T.weld.res=r=>(r.l?'ISO 5817 '+_t('classe')+' '+r.l:'')+(r.e?(r.l?' — ':'')+stat(_t(r.e),bad(r.e)?'NOK':'OK'):'');
+T.ndt={get cols(){return [['j','Saldatura / giunto (ID)','l'],['m','Metodo NDT','s',NM],['a','Norma di accettabilità','s',NAC],['c','Classe / livello','s',NCL],['ex','Estensione %','n'],['e','Esito','s',['Accettabile','Non accettabile','Da riparare','Riparato OK','Non eseguito']],['rp','Rapporto NDT nr','t'],['op','Operatore / livello (ISO 9712)','t'],['n','Note','t']]},
+ res:r=>{if(!r.m)return'';let h=_t('Riferimenti tecnici')+': '+(NR[r.m]||'-')+' · EN ISO 17635 · ISO 9712';if(r.a)h+='<br>'+_t('Accettabilità')+': '+_t(r.a)+(r.c?' – '+_t('classe')+' '+_t(r.c):'');if(r.e)h+=' — '+stat(_t(r.e),bad(r.e)?'NOK':'OK');return h}};
+document.addEventListener('input',e=>{const t=e.target.dataset;if(t.t=='weld'&&t.c=='j'&&$('#ndt'))renderT('ndt')});
+MAC.splice(MAC.findIndex(m=>m[0]=='paint'),0,['ndt','Controlli NDT']);
+(m=>{if(m)m[1]='Documentazione e quality book'})(MAC.find(m=>m[0]=='qb'));
+MAC.forEach(([k])=>{const s=$('#s-'+k);if(s&&!s.querySelector('.sdoc'))s.insertAdjacentHTML('beforeend',`<div class="sdoc" data-sec="${k}"><label>Documenti ispettore terzo (annex)</label><div class="btns" style="display:flex;gap:8px;flex-wrap:wrap"><button data-dscan="${k}">📄 Scansiona documento ispettore terzo</button><button data-dfoto="${k}">📷 Foto</button><button data-dgal="${k}">🖼️ Galleria</button></div><div class="dl"></div></div>`)});
+
+/* galleria allegati */
+$('#dcGal').onchange=e=>{const sc=dsec;[...e.target.files].forEach(f=>procDoc(f,false,u=>{S.docs.push({u,c:sc=='gen'?'':defTitle(sc),m:'foto',s:sc});renderDocs();save()}));e.target.value=''};
+$('#dcGalB').onclick=()=>{dsec='gen';$('#dcGal').click()};
+
+/* gruppi foto */
+S.pg=S.pg||[];if(!S.pg.length&&S.photos&&S.photos.length)S.pg=[{t:'',ph:S.photos.map(p=>({u:p.u,c:p.c||''}))}];if(!S.pg.length)S.pg=[{t:'',ph:[]}];
+let pgi=0;
+const photoCount=()=>S.pg.reduce((s,g)=>s+g.ph.length,0);
+function renderPg(){$('#pgs').innerHTML=S.pg.map((g,gi)=>`<div class="pgrp"><div style="display:flex;gap:8px;align-items:center"><input class="pgt" data-gt="${gi}" value="${esc(g.t)}" placeholder="Titolo / didascalia gruppo"><button class="x" data-gdel="${gi}" aria-label="Elimina">✕</button></div><div class="btns" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"><button class="p" data-gcam="${gi}">📷 Scatta</button><button data-ggal="${gi}">🖼️ Galleria</button></div><div class="ph2">${g.ph.map((p,pi)=>`<div><img src="${p.u}" alt="${bi('Foto','Photo')} ${pi+1}"><button class="x" style="position:absolute;top:2px;right:2px;float:none;background:var(--card)" data-pdel="${gi}:${pi}" aria-label="Elimina">✕</button><input data-pc2="${gi}:${pi}" value="${esc(p.c)}" placeholder="Didascalia foto"></div>`).join('')}</div></div>`).join('')}
+document.addEventListener('input',e=>{const d=e.target.dataset;if(d.gt!=null){S.pg[d.gt].t=e.target.value;save()}if(d.pc2){const[a,b]=d.pc2.split(':');S.pg[a].ph[b].c=e.target.value;save()}});
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+ if(b.id=='addPg'){S.pg.push({t:'',ph:[]});renderPg();save()}
+ if(d.gdel!=null){S.pg.splice(+d.gdel,1);if(!S.pg.length)S.pg.push({t:'',ph:[]});renderPg();save()}
+ if(d.pdel){const[a,c]=d.pdel.split(':');S.pg[a].ph.splice(+c,1);renderPg();save()}
+ if(d.gcam!=null){pgi=+d.gcam;$('#pgCam').click()}
+ if(d.ggal!=null){pgi=+d.ggal;$('#pgGal').click()}
+ if(d.dgal){dsec=d.dgal;$('#dcGal').click()}});
+function pgAdd(files){const gi=pgi;[...files].forEach(f=>resize(f,u=>{S.pg[gi].ph.push({u,c:''});renderPg();save()}))}
+$('#pgCam').onchange=e=>{pgAdd(e.target.files);e.target.value=''};
+$('#pgGal').onchange=e=>{pgAdd(e.target.files);e.target.value=''};
+
+/* nome file PDF: DataFornitoreNNN */
+const isoToday=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const supName=()=>(S.f.forn||'Fornitore').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Za-z0-9]/g,'')||'Fornitore';
+const seqGet=()=>{try{return JSON.parse(localStorage.getItem('danieli-seq')||'{}')}catch(e){return{}}};
+function peekName(){const d=(S.f.rdata||isoToday()).replace(/-/g,'');const q=S.f.rsd===d?S.f.rsq:(seqGet()[d]||0)+1;return d+supName()+String(q).padStart(3,'0')}
+function ensureName(){const d=(S.f.rdata||isoToday()).replace(/-/g,'');if(S.f.rsd!==d){const c=seqGet();c[d]=(c[d]||0)+1;try{localStorage.setItem('danieli-seq',JSON.stringify(c))}catch(e){}S.f.rsd=d;S.f.rsq=c[d];save()}return d+supName()+String(S.f.rsq).padStart(3,'0')}
+function showName(){const n=$('#fnin');if(n&&!S.f.fcustom)n.value=peekName()}
+function prepPrint(){markEmpty();const nm=(S.f.fcustom&&(S.f.fname||'').trim())?S.f.fname.trim():ensureName();document.title=nm;syncPr();$('#prT').insertAdjacentHTML('beforeend','<br><span style="font-weight:400;color:#5d6873">'+esc(nm)+'.pdf</span>');syncTp();showName()}
+window.removeEventListener('beforeprint',syncPr);window.addEventListener('beforeprint',prepPrint);window.addEventListener('afterprint',()=>{applyLang();showName()});
+$('#bPrint').onclick=()=>{prepPrint();window.print()};
+document.addEventListener('input',e=>{const f=e.target.dataset.f;if(f=='forn'||f=='rdata')showName()});
+
+/* riepilogo: saldature, NDT, foto */
+const _sum3=summary;
+summary=function(){let t=_sum3();const v=a=>a||'-';let q='';
+ if(S.macros.includes('ndt')){q+='\n\n'+bi('CONTROLLI NDT:','NDT INSPECTIONS:');S.ndt.filter(r=>r.m).forEach(r=>{q+='\n - '+v(r.j)+': '+_t(r.m)+' | '+(NR[r.m]||'')+' | '+_t(v(r.a))+(r.c?' '+bi('classe','class')+' '+_t(r.c):'')+' | '+bi('estensione','extent')+' '+v(r.ex)+'% | '+_t(v(r.e))+(r.rp?' | '+bi('rapporto','report')+' '+r.rp:'')+(r.op?' | '+r.op:'')+(r.n?' | '+r.n:'')})}
+ const g=S.pg.filter(x=>x.t||x.ph.length);if(g.length){q+='\n\n'+bi('FOTO:','PHOTOS:');g.forEach(x=>{q+='\n '+v(x.t)+' ('+x.ph.length+')';x.ph.forEach((p,i)=>{if(p.c)q+='\n   '+(i+1)+'. '+p.c})})}
+ q+='\n\nFile: '+((S.f.fcustom&&S.f.fname)||peekName())+'.pdf';
+ const key='\n\n'+bi('Foto allegate','Photos attached'),i=t.indexOf(key);return i<0?t+q:t.slice(0,i)+q+t.slice(i)};
+
+/* manuale integrato */
+const MAN=[["Aprire il tool", "Aprire il link <b>in Chrome</b> (non nell'app Claude). Menu &gt; <i>Aggiungi a schermata Home</i> per avere l'icona. Il manuale è nel link <b>Manuale / Manual</b> in alto.", "Open the tool", "Open the link <b>in Chrome</b> (not inside the Claude app). Menu &gt; <i>Add to Home screen</i> for an icon. The manual is under the <b>Manuale / Manual</b> link at the top."], ["Lingua", "Scegliere <b>Italiano</b> o <b>English</b> in cima: etichette, esiti e riepilogo cambiano lingua. I testi scritti da voi restano come inseriti.", "Language", "Choose <b>Italiano</b> or <b>English</b> at the top: labels, results and summary change language. Texts you type stay as entered."], ["Dati ispezione", "Compilare Cliente (con <b>Logo cliente</b> da foto/file o <b>Cerca logo online</b>), Fornitore, Luogo, Disegno. In <b>Ordini</b> inserire una o più righe: Nr Ordine, Riga, Descrizione, uno o più <b>WBS</b> per ordine (<b>+ WBS</b>), date planned/actual (<b>+ Ordine</b>). Con <b>Carica file Excel</b> si allega un foglio Excel al report e lo si può importare negli ordini.", "Inspection data", "Fill in Customer (with <b>customer logo</b> from photo/file or <b>Search logo online</b>), Supplier, Location, Drawing. Under <b>Orders</b> add one or more lines: Order no., Line, Description, one or more <b>WBS</b> per order (<b>+ WBS</b>), planned/actual dates (<b>+ Order</b>). <b>Upload Excel file</b> attaches an Excel sheet to the report and can import it into the orders."], ["Avanzamento", "Le fasi base sono sempre presenti (Ingegneria, Fabbricazione, Test, Documentazione DVCP, Identificazione, Packing, RFD). <b>Macchina complessa</b> aggiunge tutte le altre. Ogni fase ha <b>Expected date</b>, slider e %; si può rinominare o eliminare.", "Progress", "Base phases are always present (Engineering, Fabrication, Test, Documentation DVCP, Identification, Packing, RFD). <b>Complex machine</b> adds all the others. Each phase has an <b>Expected date</b>, slider and %; it can be renamed or deleted."], ["Attività svolta", "Descrivere cosa è stato verificato. Per dettare usare il microfono della tastiera del telefono.", "Activity carried out", "Describe what was checked. To dictate, use your phone keyboard microphone."], ["Sezione tecnica", "Toccare i punti di collaudo verificati: meccanica, saldatura, <b>controlli NDT</b>, preparazione verniciatura, NDFT, zincatura, cartellinatura, imballo, <b>documentazione e quality book</b>, test funzionali. Esiti e conformità si calcolano da soli. In <b>ogni</b> punto: <b>Scansiona</b> (pagina A4 intera nel report), <b>Foto</b> o <b>Galleria</b> (foto 2 per riga).", "Technical section", "Tap the inspection points checked: machining, welding, <b>NDT inspections</b>, painting preparation, NDFT, galvanizing, tagging, packing, <b>documentation and quality book</b>, functional tests. Results and compliance are calculated automatically. In <b>every</b> point: <b>Scan</b> (full A4 page in the report), <b>Photo</b> or <b>Gallery</b> (photos 2 per row)."], ["Saldature", "Una scheda per <b>ogni singola saldatura</b>: ID, posizione/componente, tipo giunto, processo, WPS, saldatore, materiale, spessore, lunghezza, livello ISO 5817 (B/C/D) ed esito VT.", "Welds", "One record for <b>each individual weld</b>: ID, position/component, joint type, process, WPS, welder, material, thickness, length, ISO 5817 level (B/C/D) and VT result."], ["Controlli NDT", "Scegliere la saldatura, il metodo (VT, PT, MT, UT, PAUT, TOFD, RT film/digitale, ET, LT, AT, IRT), la norma di accettabilità (es. ISO 5817) e la classe. Le norme di prova (es. EN ISO 17637, 3452-1, 17638, 17640, 17636) compaiono in automatico.", "NDT inspections", "Choose the weld, the method (VT, PT, MT, UT, PAUT, TOFD, RT film/digital, ET, LT, AT, IRT), the acceptance standard (e.g. ISO 5817) and the class. The test standards (e.g. EN ISO 17637, 3452-1, 17638, 17640, 17636) appear automatically."], ["Foto a gruppi", "<b>+ Gruppo foto</b>: scrivere il titolo, poi <b>Scatta</b> o <b>Galleria</b> (anche più foto). Ogni foto ha la sua didascalia. Poi passare al gruppo successivo. Nel report: 2 foto per riga.", "Photo groups", "<b>+ Photo group</b>: type the title, then <b>Take photo</b> or <b>Gallery</b> (several photos allowed). Each photo has its own caption. Then move to the next group. In the report: 2 photos per row."], ["Esito e azioni", "Scegliere l'esito generale. In <b>Azioni da eseguire</b> indicare azione, chi, entro il (+ Azione per altre righe).", "Result and actions", "Choose the overall result. In <b>Actions to be taken</b> enter action, who, due by (+ Action for more rows)."], ["Firme", "Controllare la data del report, inserire nome, ditta e funzione e firmare con il dito (o <b>Firma digitata</b>). <b>+ Partecipante</b> aggiunge altre firme.", "Signatures", "Check the report date, enter name, company and function and sign with your finger (or <b>Typed signature</b>). <b>+ Participant</b> adds more signatures."], ["Documento generale", "In fondo: <b>Scansiona</b> (bianco/nero), <b>Foto</b> o <b>Galleria</b> per allegati non legati a un punto di collaudo.", "General document", "At the bottom: <b>Scan</b> (black and white), <b>Photo</b> or <b>Gallery</b> for attachments not tied to an inspection point."], ["Chiudere il report", "<b>Riepilogo</b> copia il testo. <b>Stampa / PDF</b> &gt; Salva come PDF (grafica di sfondo attiva). Il file si chiama <b>DataFornitoreNNN</b> (es. 20261023Ecomacchine001), modificabile nel campo <b>Nome file PDF</b>. <b>Nuovo</b> cancella tutto.", "Closing the report", "<b>Summary</b> copies the text. <b>Print / PDF</b> &gt; Save as PDF (background graphics on). The file is named <b>DateSupplierNNN</b> (e.g. 20261023Ecomacchine001), editable in the <b>PDF file name</b> field. <b>New</b> clears everything."]];
+$('#tot').insertAdjacentHTML('beforebegin','<a id="manBtn" href="#manuale" role="button">📖 Manuale / Manual</a>');
+document.body.insertAdjacentHTML('beforeend','<div id="man" class="hide" role="dialog" aria-modal="true"><div id="manH"><b>Manuale / Manual</b><button id="manX">✕ Chiudi / Close</button></div><div id="manB">'+MAN.map((r,i)=>`<div class="mi"><b>${i+1}. ${r[0]}</b><p>${r[1]}</p><div class="en"><b>${r[2]}</b><p>${r[3]}</p></div></div>`).join('')+'</div></div>');
+$('#manBtn').onclick=e=>{e.preventDefault();$('#man').classList.remove('hide');$('#man').scrollTop=0};
+$('#manX').onclick=()=>$('#man').classList.add('hide');
+
+setLang(S.f.lang||'it');showName();
+</script>
+<script>
+Object.assign(EN,{'Ordini':'Orders','+ Ordine':'+ Order','Macchina complessa':'Complex machine','Macchina complessa: aggiunge tutte le fasi (acquisti, arrivo materiali, piping, electric on board…). Puoi eliminare o rinominare ogni fase.':'Complex machine: adds all phases (purchasing, material arrival, piping, electrical on board…). You can delete or rename any phase.','Ingegneria':'Engineering','Acquisti':'Purchasing','Fabbricazione':'Fabrication','Fabbricazione (saldature)':'Fabrication (welding)','Documentazione (DVCP)':'Documentation (DVCP)','Documentazione tecnica (DVCP)':'Technical documentation (DVCP)','Identificazione (labels)':'Identification (labels)','Piping on board':'Piping on board','Electric on board':'Electrical on board','Assemblaggio':'Assembly','🔍 Cerca logo online':'🔍 Search logo online','Spunta le voci richieste e verificate. Nel report compaiono solo le voci selezionate.':'Tick the items required and checked. Only the selected items appear in the report.','Nome file PDF (modificabile)':'PDF file name (editable)','Metti a pagina A4':'Set as full A4 page','Metti come foto':'Set as photo','Scrivi prima il nome del cliente.':'Enter the customer name first.','Il browser ha bloccato la ricerca: cerca “nome cliente logo” nel browser, salva l’immagine e caricala con “Logo cliente”.':'The browser blocked the search: search “customer name logo” in your browser, save the image and upload it with “Customer logo”.','Nella ricerca tieni premuta l’immagine e scegli “Scarica immagine”, poi tocca “Logo cliente” e scegli il file scaricato.':'In the search results press and hold the image and choose “Download image”, then tap “Customer logo” and choose the downloaded file.'});
+
+/* ---------- ordini multipli ---------- */
+T.ords={cols:[['o','Nr Ordine','t'],['r','Riga ordine','t'],['w','Job / WBS','t'],['d','Descrizione','t'],['dp','Data richiesta (planned)','d'],['da','Data stimata (actual)','d']],res:()=>''};
+if(!S.ords||!S.ords.length)S.ords=[{o:S.f.ord||'',r:S.f.riga||'',w:S.f.wbs||'',d:S.f.dsc||'',dp:S.f.dreq||'',da:S.f.dest||''}];
+function ordLabel(){return S.ords.filter(o=>o.o).map(o=>o.o+(o.r?'/'+o.r:'')).join(', ')||'-'}
+const ordersTxt=()=>S.ords.filter(o=>o.o||o.d||(o.wl||[]).some(Boolean)).map(o=>bi('Ordine','Order')+': '+(o.o||'-')+' | '+bi('Riga','Line')+': '+(o.r||'-')+' | WBS: '+((o.wl||[]).filter(Boolean).join(', ')||'-')+' | '+(o.d||'-')+' | planned: '+(o.dp||'-')+' | actual: '+(o.da||'-')).join('\n');
+
+/* ---------- macro fasi ---------- */
+const PHB=[['eng','Ingegneria'],['fab','Fabbricazione'],['tst','Test'],['doc','Documentazione (DVCP)'],['lbl','Identificazione (labels)'],['pck','Packing'],['rfd','RFD (Ready for delivery)']];
+const PHC=[['eng','Ingegneria'],['pur','Acquisti'],['mat','Arrivo materiali'],['fab','Fabbricazione (saldature)'],['ndt','Controlli NDT'],['pnt','Verniciatura'],['mac','Lavorazioni meccaniche'],['asm','Assemblaggio'],['pip','Piping on board'],['ele','Electric on board'],['tst','Test'],['doc','Documentazione tecnica (DVCP)'],['lbl','Identificazione (labels)'],['pck','Packing'],['rfd','RFD (Ready for delivery)']];
+PHC.concat(PHB).forEach(([k,n])=>{if(!PHN.includes(n))PHN.push(n)});
+const NK={};PHC.concat(PHB).forEach(([k,n])=>NK[n]=k);
+const OLD12=['Acquisto','Arrivo materiali','Saldature','Controlli NDT','Lavorazioni meccaniche','Verniciatura','Montaggio','Test','Cartellinatura','Imballaggio','Documentazione','Ready for delivery'];
+const OLDK={'Saldature':'fab','Test':'tst','Documentazione':'doc','Cartellinatura':'lbl','Imballaggio':'pck','Ready for delivery':'rfd'};
+function fixPh(){const nm=S.ph.map(p=>p.n);
+ if(S.ph.length==12&&OLD12.every((n,i)=>nm[i]==n)){const by={};S.ph.forEach(p=>{if(OLDK[p.n])by[OLDK[p.n]]=p.p});S.ph=PHB.map(([k,n])=>({k,n,p:by[k]||0,d:''}))}
+ S.ph.forEach((p,i)=>{if(!p.k)p.k=NK[p.n]||('x'+i);if(p.d==null)p.d='';if(p.p==null)p.p=0});if(S.f.cplx==null)S.f.cplx=false}
+const convN=n=>LANG=='en'&&EN[n]?EN[n]:n;
+function setCplx(on){
+ if(on){const cur={};S.ph.forEach(p=>cur[p.k]=p);const out=[];
+  PHC.forEach(([k,n])=>{const p=cur[k];if(p){if(k=='fab'&&p.n=='Fabbricazione')p.n='Fabbricazione (saldature)';if(k=='doc'&&p.n=='Documentazione (DVCP)')p.n='Documentazione tecnica (DVCP)';out.push(p);delete cur[k]}else out.push({k,n:convN(n),p:0,d:''})});
+  S.ph.forEach(p=>{if(cur[p.k])out.push(p)});S.ph=out}
+ else{const base=PHB.map(b=>b[0]);S.ph=S.ph.filter(p=>!(NK[p.n]&&!base.includes(p.k)&&PHC.some(c=>c[0]==p.k)&&!p.p&&!p.d));S.ph.forEach(p=>{if(p.k=='fab'&&p.n=='Fabbricazione (saldature)')p.n='Fabbricazione';if(p.k=='doc'&&p.n=='Documentazione tecnica (DVCP)')p.n='Documentazione (DVCP)'})}
+ S.f.cplx=on;renderPh();save()}
+renderPh=function(){
+ $('#phases').innerHTML='<div id="strip">'+S.ph.map(p=>`<i class="${p.p>=100?'ok':''}" title="${esc(p.n)}"><b style="width:${p.p}%"></b></i>`).join('')+'</div>'+S.ph.map((p,i)=>`<div class="phx"><div class="ring${p.p>=100?' ok':''}" style="--p:${p.p}"><b>${p.p}%</b></div><div class="phb"><div class="phtop"><input class="nm" value="${esc(p.n)}" data-pi="${i}" data-pk="n" aria-label="Fase"><button class="x" data-del="ph:${i}" aria-label="Elimina">✕</button></div><div class="phmid"><label>Expected date</label><input type="date" value="${p.d||''}" data-pi="${i}" data-pk="d"><div class="phr"><input type="range" min="0" max="100" step="5" value="${p.p}" data-pi="${i}" data-pk="p" aria-label="Percentuale"><input type="number" min="0" max="100" value="${p.p}" data-pi="${i}" data-pk="p" inputmode="numeric"><span>%</span></div></div></div></div>`).join('');
+ const c=$('#cplx');if(c)c.classList.toggle('on',!!S.f.cplx)};
+function updStrip(){$$('#strip i').forEach((el,i)=>{const p=S.ph[i];if(!p)return;el.classList.toggle('ok',p.p>=100);el.firstChild.style.width=p.p+'%'})}
+$('#phases').addEventListener('input',e=>{const t=e.target,i=t.dataset.pi;if(i==null)return;const p=S.ph[+i],k=t.dataset.pk;
+ if(k=='n')p.n=t.value;else if(k=='d')p.d=t.value;else{const v=Math.max(0,Math.min(100,+t.value||0));p.p=v;const w=t.closest('.phx');w.querySelectorAll('[data-pk=p]').forEach(q=>{if(q!==t)q.value=v});const r=w.querySelector('.ring');r.style.setProperty('--p',v);r.classList.toggle('ok',v>=100);r.querySelector('b').textContent=v+'%';updStrip()}save()});
+$('#addPh').onclick=()=>{S.ph.push({k:'x'+Date.now(),n:_t('Nuova fase'),p:0,d:''});renderPh();save()};
+$('#cplx').onclick=()=>setCplx(!S.f.cplx);
+
+/* ---------- ricerca logo cliente ---------- */
+$('#clSrch').onclick=()=>{const q=(S.f.cli||'').trim();if(!q){alert(_t('Scrivi prima il nome del cliente.'));return}
+ const w=window.open('https://www.google.com/search?tbm=isch&q='+encodeURIComponent(q+' logo'),'_blank');
+ if(!w){alert(_t('Il browser ha bloccato la ricerca: cerca “nome cliente logo” nel browser, salva l’immagine e caricala con “Logo cliente”.'));return}
+ $('#clHint').style.display='block'};
+
+/* ---------- documenti: foto 2 per riga, scansioni A4 ---------- */
+renderDocs=function(){const card=(d,i)=>`<div class="d ${d.m=='scan'?'scan':'foto'}"><div style="display:flex;gap:6px;align-items:center"><input data-dc="${i}" value="${esc(d.c)}" placeholder="Titolo documento (es. certificato, disegno)"><button class="x" data-ddel="${i}" aria-label="Elimina">✕</button></div><img src="${d.u}" alt="${bi('Documento','Document')} ${i+1}"><button class="x" style="float:none;margin-top:6px" data-dtog="${i}">${d.m=='scan'?'Metti come foto':'Metti a pagina A4'}</button></div>`;
+ const html=a=>'<div class="dlp">'+a.filter(([d])=>d.m!='scan').map(([d,i])=>card(d,i)).join('')+'</div><div class="dls">'+a.filter(([d])=>d.m=='scan').map(([d,i])=>card(d,i)).join('')+'</div>';
+ const all=S.docs.map((d,i)=>[d,i]);
+ $('#docs').innerHTML=html(all.filter(([d])=>!d.s||d.s=='gen'));
+ $$('.sdoc').forEach(b=>{b.querySelector('.dl').innerHTML=html(all.filter(([d])=>d.s==b.dataset.sec))})};
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.dataset.dtog==null)return;const d=S.docs[+b.dataset.dtog];d.m=d.m=='scan'?'foto':'scan';renderDocs();applyLang();save()});
+
+/* ---------- nome file modificabile ---------- */
+$('#fnin').addEventListener('input',e=>{S.f.fname=e.target.value;S.f.fcustom=e.target.value.trim()!=='';if(!S.f.fcustom)showName();save()});
+if(S.f.fcustom&&S.f.fname)$('#fnin').value=S.f.fname;
+
+fixPh();
+setLang(S.f.lang||'it');showName();
+</script>
+<script>
+Object.assign(EN,{'Saldatura / giunto (ID)':'Weld / joint (ID)'});
+function fillW(){$('#wlist').innerHTML=S.weld.map(w=>w.j).filter(Boolean).map(j=>'<option value="'+esc(j)+'">').join('')}
+document.addEventListener('input',e=>{const d=e.target.dataset;if(d.t=='weld'&&d.c=='j')fillW()});
+function markEmpty(){
+ $$('.pe').forEach(e=>e.classList.remove('pe'));
+ $$('section[id^="s-"]').forEach(sec=>{
+  if(sec.classList.contains('hide'))return;let any=false;
+  const has=c=>(c.value||'').trim()!=='';
+  [...sec.querySelectorAll('input,select,textarea')].filter(c=>!c.closest('.sdoc')&&!c.closest('.ck')&&!['checkbox','file','range'].includes(c.type)).forEach(c=>{
+   if(has(c)){any=true;return}
+   const box=c.closest('.g>div');if(box)box.classList.add('pe');else{c.classList.add('pe');const l=c.previousElementSibling;if(l&&l.tagName=='LABEL')l.classList.add('pe')}});
+  sec.querySelectorAll('.row').forEach(r=>{if(![...r.querySelectorAll('input,select,textarea')].some(has))r.classList.add('pe')});
+  const zc=sec.querySelector('#zdef');
+  if(zc){if(zc.querySelector('input:checked'))any=true;else{zc.classList.add('pe');const l=zc.previousElementSibling;if(l&&l.tagName=='LABEL')l.classList.add('pe');const st=sec.querySelector('#znst');if(st&&!any)st.classList.add('pe')}}
+  if(sec.querySelector('#imb .ck input:checked'))any=true;
+  if(sec.querySelector('.d'))any=true;
+  if(!any)sec.classList.add('pe')})}
+fillW();
+</script>
+<script>
+Object.assign(EN,{'111 – Elettrodo rivestito (MMA)': '111 – Covered electrode (MMA)', '114 – Filo animato autoprotetto': '114 – Self-shielded flux-cored wire', '121 – Arco sommerso (SAW) a filo': '121 – Submerged arc (SAW), wire', '131 – MIG a filo pieno (gas inerte)': '131 – MIG, solid wire (inert gas)', '135 – MAG a filo pieno (gas attivo)': '135 – MAG, solid wire (active gas)', '136 – MAG a filo animato (gas attivo)': '136 – MAG, flux-cored wire (active gas)', '137 – MIG a filo animato (gas inerte)': '137 – MIG, flux-cored wire (inert gas)', '141 – TIG (elettrodo di tungsteno, gas inerte)': '141 – TIG (tungsten electrode, inert gas)', '15 – Plasma': '15 – Plasma', '311 – Ossiacetilenica': '311 – Oxyacetylene', '52 – Laser': '52 – Laser', '783 – Saldatura di prigionieri (stud)': '783 – Stud welding'});
+(function(){const o=T.weld.cols.find(c=>c[0]=='pr')[3];S.weld.forEach(r=>{if(/^\d+$/.test(r.pr||'')){const m=o.find(x=>x.startsWith(r.pr+' –'));if(m)r.pr=m}});renderT('weld');applyLang();save()})();
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+Object.assign(EN,{'File Excel':'Excel file','Carica un file Excel (.xlsx, .xls, .csv): viene mostrato nel report e puoi importarne le righe negli ordini (colonne riconosciute: Ordine, Riga, WBS, Descrizione).':'Upload an Excel file (.xlsx, .xls, .csv): it is shown in the report and you can import its rows into the orders (recognised columns: Order, Line, WBS, Description).','📊 Carica file Excel':'📊 Upload Excel file','Importa negli ordini':'Import into orders','✕ Rimuovi':'✕ Remove','+ WBS':'+ WBS','Descrizione ordine / componente':'Order / component description','Job / WBS':'Job / WBS'});
+
+/* ---- ordini con più WBS ---- */
+const _rT=renderT;renderT=function(k){return k=='ords'?renderOrds():_rT(k)};
+function renderOrds(){
+ S.ords.forEach(o=>{if(!Array.isArray(o.wl)||!o.wl.length)o.wl=[o.w||''];delete o.w});
+ $('#ords').innerHTML=S.ords.map((o,i)=>`<div class="row ord"><button class="x" data-od="${i}" aria-label="Elimina">✕</button>
+<div class="g"><div><label>Nr Ordine</label><input data-o="${i}" data-oc="o" value="${esc(o.o)}"></div><div><label>Riga ordine</label><input data-o="${i}" data-oc="r" value="${esc(o.r)}"></div></div>
+<div class="ofull odw"><label>Descrizione</label><textarea class="odesc" data-o="${i}" data-oc="d" placeholder="Descrizione ordine / componente">${esc(o.d)}</textarea></div>
+<div class="ofull owb"><label>Job / WBS</label><div class="wbsl">${o.wl.map((w,j)=>`<span class="wb"><input class="wbsi" data-ow="${i}:${j}" value="${esc(w)}" placeholder="WBS"><button class="x" data-owd="${i}:${j}" aria-label="Elimina">✕</button></span>`).join('')}<button data-owa="${i}">+ WBS</button></div></div>
+<div class="g ofull"><div><label>Data richiesta (planned)</label><input type="date" data-o="${i}" data-oc="dp" value="${esc(o.dp)}"></div><div><label>Data stimata (actual)</label><input type="date" data-o="${i}" data-oc="da" value="${esc(o.da)}"></div></div></div>`).join('')}
+document.addEventListener('input',e=>{const d=e.target.dataset;
+ if(d.oc){S.ords[+d.o][d.oc]=e.target.value;save()}
+ else if(d.ow){const[a,b]=d.ow.split(':');S.ords[+a].wl[+b]=e.target.value;save()}});
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+ if(d.od!=null){S.ords.splice(+d.od,1);if(!S.ords.length)S.ords.push({});renderOrds();save()}
+ if(d.owa!=null){const w=S.ords[+d.owa].wl;w.push('');renderOrds();save();const l=$$('[data-ow^="'+d.owa+':"]');if(l.length)l[l.length-1].focus()}
+ if(d.owd){const[a,c]=d.owd.split(':'),w=S.ords[+a].wl;w.splice(+c,1);if(!w.length)w.push('');renderOrds();save()}});
+
+/* ---- testo lungo nel PDF: copia stampabile delle textarea ---- */
+function syncTp(){$$('textarea').forEach(t=>{let p=t.nextElementSibling;if(!p||!p.classList.contains('tp')){p=document.createElement('div');p.className='tp';t.after(p)}p.textContent=t.value})}
+
+/* ---- file Excel ---- */
+function renderXl(){const x=S.xl,b=$('#xlTab');
+ $('#xlInfo').textContent=x?x.name+' — '+x.rows.length+' '+bi('righe','rows'):'';
+ $('#xlImp').style.display=x?'':'none';$('#xlDel').style.display=x?'':'none';
+ if(!x){b.innerHTML='';return}
+ const n=Math.max(1,...x.rows.map(r=>r.length));
+ b.innerHTML='<div class="xlt" style="--n:'+n+'">'+x.rows.map((r,i)=>'<div class="xlr'+(i?'':' xh')+'">'+Array.from({length:n},(_,c)=>'<span>'+esc(r[c])+'</span>').join('')+'</div>').join('')+'</div>'}
+$('#xlBtn').onclick=()=>$('#xlIn').click();
+$('#xlDel').onclick=()=>{S.xl=null;renderXl();save()};
+$('#xlIn').onchange=e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+ if(typeof XLSX=='undefined'){alert(bi('Libreria Excel non disponibile: controlla la connessione e riprova.','Excel library not available: check your connection and try again.'));return}
+ const r=new FileReader();r.onload=()=>{try{const wb=XLSX.read(new Uint8Array(r.result),{type:'array'}),nm=wb.SheetNames[0];
+  let rows=XLSX.utils.sheet_to_json(wb.Sheets[nm],{header:1,defval:'',raw:false});
+  rows=rows.filter(q=>q.some(c=>String(c).trim()!=='')).slice(0,200).map(q=>q.slice(0,14).map(c=>String(c)));
+  S.xl={name:f.name,sheet:nm,rows};renderXl();save()}catch(err){alert(bi('File non leggibile.','Unreadable file.'))}};r.readAsArrayBuffer(f)};
+const XH=[['r',/riga|line/i],['w',/wbs|job/i],['dp',/planned|richiest/i],['da',/actual|stimat/i],['d',/descr/i],['o',/ordin|order|^po\b/i]];
+const xIso=s=>{let m=String(s).match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/);if(m)return m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0');return /^\d{4}-\d{2}-\d{2}$/.test(s)?s:''};
+$('#xlImp').onclick=()=>{const x=S.xl;if(!x||x.rows.length<2)return;const ix={};
+ XH.forEach(([k,re])=>{const j=x.rows[0].findIndex((h,j)=>re.test(h)&&!Object.values(ix).includes(j));if(j>=0)ix[k]=j});
+ if(ix.o==null&&ix.w==null){alert(bi('Colonne non riconosciute: la prima riga deve contenere intestazioni come Ordine, Riga, WBS, Descrizione.','Columns not recognised: the first row must contain headers such as Order, Line, WBS, Description.'));return}
+ const map={},out=[];
+ x.rows.slice(1).forEach(q=>{const g=k=>ix[k]!=null?String(q[ix[k]]||'').trim():'';if(!g('o')&&!g('w')&&!g('d'))return;
+  const key=g('o')||'-';let o=map[key];if(!o){o=map[key]={o:g('o'),r:g('r'),d:g('d'),dp:xIso(g('dp')),da:xIso(g('da')),wl:[]};out.push(o)}
+  const w=g('w');if(w&&!o.wl.includes(w))o.wl.push(w);if(!o.d)o.d=g('d')});
+ if(!out.length)return;
+ const empty=S.ords.every(o=>!o.o&&!o.d&&!(o.wl||[]).some(Boolean));
+ S.ords=(empty?[]:S.ords).concat(out);renderOrds();save();
+ $('#xlInfo').textContent=x.name+' — '+x.rows.length+' '+bi('righe','rows')+' → '+out.length+' '+bi('ordini importati','orders imported')};
+
+/* ---- PDF: nascondi campi vuoti per evitare spazi ---- */
+const _mE=markEmpty;markEmpty=function(){_mE();
+ const pe=(el,on)=>el&&el.classList.toggle('pe',on);
+ $$('.wbsi').forEach(i=>pe(i.closest('.wb'),!i.value.trim()));
+ $$('.owb').forEach(w=>pe(w,![...w.querySelectorAll('.wbsi')].some(i=>i.value.trim())));
+ $$('.odw').forEach(w=>pe(w,!w.querySelector('textarea').value.trim()));
+ $$('.ord .g input').forEach(i=>pe(i.closest('div'),!i.value.trim()));
+ ['forn','luogo','dis'].forEach(f=>{const i=$('[data-f='+f+']');if(i)pe(i.closest('div'),!i.value.trim())});
+ pe($('#descsec'),!(S.f.desc||'').trim());
+ pe($('#xlsec'),!S.xl);pe($('#techsec'),!S.macros.length);pe($('#fotosec'),!photoCount());pe($('#azsec'),!S.az.some(r=>r.a));
+ ['esito','next'].forEach(f=>{const i=$('[data-f='+f+']');if(i)pe(i.closest('div'),!i.value)});
+ $$('.phmid').forEach(m=>pe(m,!m.querySelector('input[type=date]').value))};
+
+renderOrds();renderXl();applyLang();
+</script>
+</body>
+</html>
